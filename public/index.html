@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymTracker - Il tuo Personal Trainer Digitale</title>
+    <base href="/nicola/">
+
+    <!-- Meta tags -->
+    <meta name="description" content="Crea e gestisci le tue schede di allenamento personalizzate con GymTracker">
+    <meta name="keywords" content="palestra, fitness, allenamento, schede, esercizi">
+    <meta name="author" content="The Guardians of Civilization">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #4f46e5;
+            --primary-dark: #3730a3;
+            --secondary-color: #06b6d4;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent-color) 0%, var(--danger-color) 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-primary);
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            background: var(--bg-primary);
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgb(79 70 229 / 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-primary);
+            border-radius: 1rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-footer {
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+        @media (max-width: 768px) {
+            .grid-cols-2,
+            .grid-cols-3 {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 0.25rem;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-color: #10b981;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #ef4444;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-color: #3b82f6;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-color: #f59e0b;
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--border-color);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Hero Section */
+        .hero {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* Exercise Item */
+        .exercise-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .exercise-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .exercise-info p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .exercise-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Utilities */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .text-sm { font-size: 0.875rem; }
+        .text-secondary { color: var(--text-secondary); }
+        .mb-4 { margin-bottom: 2rem; }
+        .mt-4 { margin-top: 2rem; }
+        .p-4 { padding: 2rem; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .flex-1 { flex: 1; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 2rem; }
+        .w-full { width: 100%; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .btn {
+                padding: 0.625rem 1rem;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-dumbbell"></i>
+                    GymTracker
+                </a>
+                <div class="nav-actions">
+                    <div id="auth-buttons" class="flex gap-4">
+                        <button id="login-btn" class="btn btn-secondary">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Accedi
+                        </button>
+                        <button id="signup-btn" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i>
+                            Registrati
+                        </button>
+                    </div>
+                    <div id="user-menu" class="hidden flex items-center gap-4">
+                        <span id="user-name" class="text-sm text-secondary">Ciao, Utente!</span>
+                        <button id="logout-btn" class="btn btn-secondary">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Esci
+                        </button>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="app">
+        <!-- Hero Section (Shown when not logged in) -->
+        <section id="hero-section" class="hero">
+            <div class="container">
+                <h1>Il Tuo Personal Trainer Digitale</h1>
+                <p>Crea, gestisci e monitora le tue schede di allenamento personalizzate</p>
+                <div class="flex gap-4 items-center justify-center">
+                    <button id="hero-signup-btn" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i>
+                        Inizia Gratis
+                    </button>
+                    <button id="hero-login-btn" class="btn btn-secondary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Ho già un account
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Onboarding Section -->
+        <section id="onboarding-section" class="hidden p-4">
+            <div class="container">
+                <div class="card" style="max-width: 600px; margin: 2rem auto;">
+                    <div class="card-header text-center">
+                        <h2>Benvenuto in GymTracker!</h2>
+                        <p class="text-secondary">Configuriamo il tuo profilo per iniziare</p>
+                    </div>
+                    <div class="card-body">
+                        <form id="onboarding-form">
+                            <div class="form-group">
+                                <label class="form-label">Qual è il tuo nome completo?</label>
+                                <input type="text" id="full-name" class="form-input" placeholder="Es. Mario Rossi">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Quanti anni hai? *</label>
+                                <input type="number" id="age" class="form-input" min="13" max="120" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Qual è il tuo livello di fitness? *</label>
+                                <select id="fitness-level" class="form-select" required>
+                                    <option value="">Seleziona il tuo livello</option>
+                                    <option value="beginner">Principiante - Sto iniziando ora</option>
+                                    <option value="intermediate">Intermedio - Ho qualche mese di esperienza</option>
+                                    <option value="advanced">Avanzato - Mi alleno da anni</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Quali sono i tuoi obiettivi?</label>
+                                <textarea id="goals" class="form-textarea" placeholder="Es. Perdere peso, aumentare massa muscolare, migliorare la resistenza..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-full">
+                                <i class="fas fa-check"></i>
+                                Completa Configurazione
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="hidden p-4">
+            <div class="container">
+                <div class="flex justify-between items-center mb-4">
+                    <h2>Le Tue Schede di Allenamento</h2>
+                    <button id="new-workout-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Nuova Scheda
+                    </button>
+                </div>
+                
+                <div id="workouts-grid" class="grid grid-cols-3">
+                    <!-- Le schede verranno inserite qui dinamicamente -->
+                </div>
+                
+                <div id="empty-state" class="hidden text-center p-4">
+                    <div class="card" style="max-width: 500px; margin: 2rem auto;">
+                        <div class="card-body">
+                            <i class="fas fa-dumbbell text-6xl text-secondary mb-4"></i>
+                            <h3>Nessuna scheda ancora</h3>
+                            <p class="text-secondary mb-4">Crea la tua prima scheda di allenamento personalizzata!</p>
+                            <button id="empty-new-workout-btn" class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Crea Prima Scheda
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workout Detail Section -->
+        <section id="workout-detail-section" class="hidden p-4">
+            <div class="container">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <button id="back-to-dashboard" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Torna alla Dashboard
+                        </button>
+                    </div>
+                    <div class="flex gap-4">
+                        <button id="edit-workout-btn" class="btn btn-secondary">
+                            <i class="fas fa-edit"></i>
+                            Modifica
+                        </button>
+                        <button id="add-exercise-btn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Aggiungi Esercizio
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 id="workout-title">Scheda di Allenamento</h2>
+                        <p id="workout-description" class="text-secondary"></p>
+                    </div>
+                    <div class="card-body">
+                        <div id="exercises-list">
+                            <!-- Gli esercizi verranno inseriti qui -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Accedi al tuo account</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="login-email" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="login-password" class="form-input" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-full">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Accedi
+                    </button>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <a href="#" id="show-signup" class="text-primary">Non hai un account? Registrati</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Crea il tuo account</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label class="form-label">Nome completo</label>
+                        <input type="text" id="signup-name" class="form-input" placeholder="Es. Mario Rossi">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="signup-email" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="signup-password" class="form-input" minlength="6" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-full">
+                        <i class="fas fa-user-plus"></i>
+                        Registrati
+                    </button>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <a href="#" id="show-login" class="text-primary">Hai già un account? Accedi</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Workout Modal -->
+    <div id="new-workout-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Crea Nuova Scheda</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="new-workout-form">
+                    <div class="form-group">
+                        <label class="form-label">Nome della scheda *</label>
+                        <input type="text" id="workout-name" class="form-input" placeholder="Es. Allenamento Pettorali" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Descrizione</label>
+                        <textarea id="workout-description-input" class="form-textarea" placeholder="Descrivi brevemente questa scheda di allenamento..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Esercizi</label>
+                        <div id="exercises-container">
+                            <div class="exercise-form">
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <input type="text" class="form-input exercise-name" placeholder="Nome esercizio (es. Panca piana)">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <select class="form-select exercise-sets">
+                                            <option value="">Serie</option>
+                                            <option value="1">1 serie</option>
+                                            <option value="2">2 serie</option>
+                                            <option value="3">3 serie</option>
+                                            <option value="4">4 serie</option>
+                                            <option value="5">5 serie</option>
+                                            <option value="6">6 serie</option>
+                                        </select>
+                                        <select class="form-select exercise-reps">
+                                            <option value="">Reps</option>
+                                            <option value="5">5 reps</option>
+                                            <option value="6">6 reps</option>
+                                            <option value="8">8 reps</option>
+                                            <option value="10">10 reps</option>
+                                            <option value="12">12 reps</option>
+                                            <option value="15">15 reps</option>
+                                            <option value="20">20 reps</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="add-exercise-form" class="btn btn-secondary">
+                            <i class="fas fa-plus"></i>
+                            Aggiungi altro esercizio
+                        </button>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-full">
+                        <i class="fas fa-save"></i>
+                        Salva Scheda
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Exercise Modal -->
+    <div id="add-exercise-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Aggiungi Esercizio</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-exercise-form-single">
+                    <div class="form-group">
+                        <label class="form-label">Nome esercizio *</label>
+                        <input type="text" id="single-exercise-name" class="form-input" placeholder="Es. Squat" required>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label class="form-label">Serie *</label>
+                            <select id="single-exercise-sets" class="form-select" required>
+                                <option value="">Seleziona</option>
+                                <option value="1">1 serie</option>
+                                <option value="2">2 serie</option>
+                                <option value="3">3 serie</option>
+                                <option value="4">4 serie</option>
+                                <option value="5">5 serie</option>
+                                <option value="6">6 serie</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Ripetizioni *</label>
+                            <select id="single-exercise-reps" class="form-select" required>
+                                <option value="">Seleziona</option>
+                                <option value="5">5 reps</option>
+                                <option value="6">6 reps</option>
+                                <option value="8">8 reps</option>
+                                <option value="10">10 reps</option>
+                                <option value="12">12 reps</option>
+                                <option value="15">15 reps</option>
+                                <option value="20">20 reps</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Note (opzionali)</label>
+                        <textarea id="single-exercise-notes" class="form-textarea" placeholder="Note aggiuntive sull'esercizio..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-full">
+                        <i class="fas fa-plus"></i>
+                        Aggiungi Esercizio
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 3000; max-width: 400px;"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); display: flex; align-items: center; justify-content: center; z-index: 4000;">
+        <div class="flex flex-col items-center">
+            <div class="loading" style="width: 3rem; height: 3rem; border-width: 4px;"></div>
+            <p class="mt-4">Caricamento...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript Modules - Caricamento ordinato -->
+    <!-- 1. Config Loader (già presente) -->
+    <script src="js/config/config-loader.js"></script>
+    
+    <!-- 2. Utilities -->
+    <script src="js/utils/dom-utils.js"></script>
+    <script src="js/utils/api-utils.js"></script>
+    <script src="js/utils/supabase-manager.js"></script>
+    <script src="js/utils/event-manager.js"></script>
+    
+    <!-- 3. Moduli Business Logic -->
+    <script src="js/modules/auth-module.js"></script>
+    <script src="js/modules/profile-module.js"></script>
+    <script src="js/modules/workout-module.js"></script>
+    
+    <!-- 4. Main App (Orchestratore finale) -->
+    <script src="js/main.js"></script>
+</body>
+</html>
