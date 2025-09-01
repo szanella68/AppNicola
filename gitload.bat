@@ -21,20 +21,23 @@ for /f "delims=" %%D in ('dir /ad /b /s') do (
 echo Aggiungo tutte le modifiche...
 git add -A
 
-set HAVECHANGES=
-for /f "delims=" %%f in ('git diff --cached --name-only') do set HAVECHANGES=1
+:: Verifica se ci sono cambi staged
+set "HAVECHANGES="
+git diff --cached --quiet || set "HAVECHANGES=1"
+
 if defined HAVECHANGES (
+  set "commit_msg="
   set /p commit_msg="Messaggio commit (default: sync): "
-  if "%commit_msg%"=="" set "commit_msg=sync"
-  git commit -m "%commit_msg%" || goto afterCommit
+  if not defined commit_msg set "commit_msg=sync"
+  git commit -m "!commit_msg!" || (echo Commit fallito. & pause & exit /b 1)
 ) else (
   echo Nessuna modifica da commitare.
 )
 
-:afterCommit
-for /f "delims=" %%b in ('git rev-parse --abbrev-ref HEAD') do set BRANCH=%%b
+for /f "delims=" %%b in ('git rev-parse --abbrev-ref HEAD') do set "BRANCH=%%b"
+if not defined BRANCH set "BRANCH=master"
 
-:: Se il branch remoto non esiste, crea upstream; altrimenti align con rebase e push
+:: Se il branch remoto non esiste, crea upstream; altrimenti rebase+push
 git ls-remote --exit-code --heads origin %BRANCH% >nul 2>&1
 if errorlevel 1 (
   echo Creo upstream su origin/%BRANCH%...
