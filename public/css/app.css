@@ -188,3 +188,50 @@ body {
     padding: .25rem .5rem; 
   }
 }
+
+/* Aggiungi questo alla fine del file public/css/app.css */
+
+/* Animazioni per UX migliorata */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes slideInRight { 
+  from { transform: translateX(100%); opacity: 0; } 
+  to { transform: translateX(0); opacity: 1; } 
+}
+
+@keyframes slideOutRight { 
+  from { transform: translateX(0); opacity: 1; } 
+  to { transform: translateX(100%); opacity: 0; } 
+}
+
+/* Focus migliorato per accessibilità */
+.btn:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Loading state per bottoni */
+.btn.loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.btn.loading::after {
+  content: "";
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  top: 50%;
+  left: 50%;
+  margin-left: -0.5rem;
+  margin-top: -0.5rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}

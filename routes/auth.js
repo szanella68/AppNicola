@@ -46,14 +46,19 @@ router.post('/signup', async (req, res) => {
 
     // Se la registrazione è completa con sessione attiva
     if (data.user && data.session) {
-      // Crea il profilo utente
+      console.log('✅ Signup con sessione attiva per:', data.user.email);
+      
+      // *** FIX: Crea il profilo utente con logging dettagliato ***
       const profileResult = await dbHelpers.upsertUserProfile(data.user.id, {
         email: data.user.email,
         full_name: fullName || ''
       });
 
       if (profileResult.error) {
-        console.error('Errore creazione profilo:', profileResult.error);
+        console.error('❌ Errore creazione profilo durante signup:', profileResult.error);
+        // Non bloccare la registrazione per questo errore
+      } else {
+        console.log('✅ Profilo creato durante signup:', profileResult.data);
       }
 
       res.status(201).json({
@@ -97,15 +102,32 @@ router.post('/signin', async (req, res) => {
       return res.status(401).json({ error: 'Login fallito' });
     }
 
-    // Ottieni o crea il profilo utente
+    console.log('✅ Login riuscito per:', data.user.email, 'ID:', data.user.id);
+
+    // *** FIX: Verifica/Crea profilo con logging dettagliato ***
     let profileResult = await dbHelpers.getUserProfile(data.user.id);
     
     if (profileResult.error || !profileResult.data) {
+      console.log('⚠️ Profilo utente mancante per:', data.user.email, 'Errore:', profileResult.error?.message);
+      console.log('🔧 Creando profilo utente...');
+      
       // Se il profilo non esiste, crealo
       profileResult = await dbHelpers.upsertUserProfile(data.user.id, {
         email: data.user.email,
         full_name: data.user.user_metadata?.full_name || ''
       });
+
+      if (profileResult.error) {
+        console.error('❌ ERRORE CRITICO: Impossibile creare profilo utente:', profileResult.error);
+        return res.status(500).json({ 
+          error: 'Errore nella creazione del profilo utente',
+          details: profileResult.error.message 
+        });
+      } else {
+        console.log('✅ Profilo utente creato:', profileResult.data);
+      }
+    } else {
+      console.log('✅ Profilo utente esistente:', profileResult.data.id);
     }
 
     res.status(200).json({
@@ -119,7 +141,7 @@ router.post('/signin', async (req, res) => {
       profile: profileResult.data
     });
   } catch (error) {
-    console.error('Errore interno login:', error);
+    console.error('💥 Errore interno login:', error);
     res.status(500).json({ error: 'Errore interno del server durante il login' });
   }
 });

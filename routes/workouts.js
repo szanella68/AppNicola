@@ -6,7 +6,8 @@ const router = express.Router();
 router.get('/', authenticateUser, async (req, res) => {
   try {
     const userId = req.user.id;
-    const { data, error } = await dbHelpers.getUserWorkoutPlans(userId);
+    // *** FIX: Usa client autenticato ***
+    const { data, error } = await dbHelpers.getUserWorkoutPlans(userId, req.supabaseAuth);
 
     if (error) {
       console.error('Errore recupero schede:', error);
@@ -32,7 +33,8 @@ router.get('/:id', authenticateUser, async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
 
-    const { data, error } = await supabase
+    // *** FIX: Usa client autenticato ***
+    const { data, error } = await req.supabaseAuth
       .from('workout_plans')
       .select(`
         *,
@@ -78,6 +80,9 @@ router.post('/', authenticateUser, async (req, res) => {
     const userId = req.user.id;
     const { name, description, exercises } = req.body;
 
+    console.log('🔍 User ID:', userId); // Debug
+    console.log('🔍 Request body:', { name, description, exercises: exercises?.length }); // Debug
+
     // Validazione
     if (!name || name.trim().length === 0) {
       return res.status(400).json({ error: 'Il nome della scheda è obbligatorio' });
@@ -93,7 +98,8 @@ router.post('/', authenticateUser, async (req, res) => {
       description: description?.trim() || null
     };
 
-    const { data: workoutPlan, error: planError } = await dbHelpers.createWorkoutPlan(userId, planData);
+    // *** FIX: Usa client autenticato ***
+    const { data: workoutPlan, error: planError } = await dbHelpers.createWorkoutPlan(userId, planData, req.supabaseAuth);
 
     if (planError) {
       console.error('Errore creazione scheda:', planError);
@@ -132,7 +138,8 @@ router.post('/', authenticateUser, async (req, res) => {
           order_index: i
         };
 
-        const { data: exerciseResult, error: exerciseError } = await dbHelpers.addExercise(workoutPlan.id, exerciseData);
+        // *** FIX: Usa client autenticato ***
+        const { data: exerciseResult, error: exerciseError } = await dbHelpers.addExercise(workoutPlan.id, exerciseData, req.supabaseAuth);
         
         if (exerciseError) {
           console.error('Errore aggiunta esercizio:', exerciseError);
@@ -152,7 +159,7 @@ router.post('/', authenticateUser, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Errore interno creazione scheda:', error);
+    console.error('💥 Errore completo:', error);
     res.status(500).json({ error: 'Errore interno del server' });
   }
 });
@@ -170,7 +177,8 @@ router.put('/:id', authenticateUser, async (req, res) => {
     }
 
     // Verifica proprietà
-    const { data: existingPlan, error: checkError } = await supabase
+    // *** FIX: Usa client autenticato ***
+    const { data: existingPlan, error: checkError } = await req.supabaseAuth
       .from('workout_plans')
       .select('id')
       .eq('id', id)
@@ -183,7 +191,8 @@ router.put('/:id', authenticateUser, async (req, res) => {
     }
 
     // Aggiorna
-    const { data, error } = await supabase
+    // *** FIX: Usa client autenticato ***
+    const { data, error } = await req.supabaseAuth
       .from('workout_plans')
       .update({
         name: name.trim(),
@@ -215,7 +224,8 @@ router.delete('/:id', authenticateUser, async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
 
-    const { error } = await dbHelpers.deleteWorkoutPlan(userId, id);
+    // *** FIX: Usa client autenticato ***
+    const { error } = await dbHelpers.deleteWorkoutPlan(userId, id, req.supabaseAuth);
 
     if (error) {
       console.error('Errore eliminazione scheda:', error);
@@ -237,7 +247,8 @@ router.post('/:id/exercises', authenticateUser, async (req, res) => {
     const { name, sets, reps, weight, notes } = req.body;
 
     // Verifica proprietà scheda
-    const { data: existingPlan, error: checkError } = await supabase
+    // *** FIX: Usa client autenticato ***
+    const { data: existingPlan, error: checkError } = await req.supabaseAuth
       .from('workout_plans')
       .select('id')
       .eq('id', id)
@@ -263,7 +274,8 @@ router.post('/:id/exercises', authenticateUser, async (req, res) => {
     }
 
     // Ottieni il prossimo order_index
-    const { data: exercises, error: countError } = await supabase
+    // *** FIX: Usa client autenticato ***
+    const { data: exercises, error: countError } = await req.supabaseAuth
       .from('exercises')
       .select('order_index')
       .eq('workout_plan_id', id)
@@ -281,7 +293,8 @@ router.post('/:id/exercises', authenticateUser, async (req, res) => {
       order_index: nextOrderIndex
     };
 
-    const { data, error } = await dbHelpers.addExercise(id, exerciseData);
+    // *** FIX: Usa client autenticato ***
+    const { data, error } = await dbHelpers.addExercise(id, exerciseData, req.supabaseAuth);
 
     if (error) {
       console.error('Errore aggiunta esercizio:', error);
@@ -306,7 +319,8 @@ router.put('/:workoutId/exercises/:exerciseId', authenticateUser, async (req, re
     const { name, sets, reps, weight, notes } = req.body;
 
     // Verifica proprietà
-    const { data: exercise, error: checkError } = await supabase
+    // *** FIX: Usa client autenticato ***
+    const { data: exercise, error: checkError } = await req.supabaseAuth
       .from('exercises')
       .select(`
         id,
@@ -345,7 +359,8 @@ router.put('/:workoutId/exercises/:exerciseId', authenticateUser, async (req, re
     if (weight !== undefined) updateData.weight = weight ? parseFloat(weight) : null;
     if (notes !== undefined) updateData.notes = notes?.trim() || null;
 
-    const { data, error } = await supabase
+    // *** FIX: Usa client autenticato ***
+    const { data, error } = await req.supabaseAuth
       .from('exercises')
       .update(updateData)
       .eq('id', exerciseId)
@@ -374,7 +389,8 @@ router.delete('/:workoutId/exercises/:exerciseId', authenticateUser, async (req,
     const { workoutId, exerciseId } = req.params;
 
     // Verifica proprietà
-    const { data: exercise, error: checkError } = await supabase
+    // *** FIX: Usa client autenticato ***
+    const { data: exercise, error: checkError } = await req.supabaseAuth
       .from('exercises')
       .select(`
         id,
@@ -391,7 +407,8 @@ router.delete('/:workoutId/exercises/:exerciseId', authenticateUser, async (req,
       return res.status(404).json({ error: 'Esercizio non trovato' });
     }
 
-    const { error } = await supabase
+    // *** FIX: Usa client autenticato ***
+    const { error } = await req.supabaseAuth
       .from('exercises')
       .delete()
       .eq('id', exerciseId);
@@ -431,7 +448,8 @@ router.post('/:id/log', authenticateUser, async (req, res) => {
           notes: exercise.notes?.trim() || null
         };
 
-        const { data: log, error: logError } = await dbHelpers.logWorkout(userId, logData);
+        // *** FIX: Usa client autenticato ***
+        const { data: log, error: logError } = await dbHelpers.logWorkout(userId, logData, req.supabaseAuth);
         
         if (!logError) {
           logs.push(log);
