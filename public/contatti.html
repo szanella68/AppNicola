@@ -1,109 +1,737 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Contatti • GymTracker</title>
-  <base href="/nicola/">
-
-  <!-- Fonts & Icone -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- CSS comune -->
-  <link rel="stylesheet" href="css/app.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contatti e Supporto | GymTracker</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Contatta il supporto GymTracker per assistenza, feedback e domande">
+    <meta name="keywords" content="supporto, contatti, assistenza, help, faq, gymtracker">
+    <meta name="author" content="The Guardians of Civilization">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/content-pages.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
-<body>
-
-  <!-- Header -->
-  <header class="header">
-    <div class="container">
-      <nav class="navbar">
-        <a href="home.html" class="logo"><i class="fas fa-dumbbell"></i> GymTracker</a>
-        <div class="nav-actions">
-          <a href="home.html">Home</a>
-          <a href="index.html">App</a>
-          <a href="calendario.html">Calendario</a>
-          <a href="privacy.html">Privacy</a>
-          <a href="terms.html">Termini</a>
-          <a href="contatti.html"><strong>Contatti</strong></a>
-        </div>
-      </nav>
-    </div>
-  </header>
-
-  <main class="container section">
-    <div class="section-header">
-      <div class="title">
-        <span class="badge">Parliamone</span>
-        <h2>Contattaci</h2>
-      </div>
-    </div>
-
-    <div class="grid grid-2">
-      <!-- Info -->
-      <div class="card">
-        <div class="card-body">
-          <h3>Dove trovarci</h3>
-          <p class="mt-2">
-            Supporto generale: <a href="mailto:info@example.com">info@example.com</a><br>
-            Privacy: <a href="mailto:privacy@example.com">privacy@example.com</a><br>
-            Legale: <a href="mailto:legal@example.com">legal@example.com</a>
-          </p>
-          <hr>
-          <h3 class="mt-3">Segnalazioni e feedback</h3>
-          <p class="mt-2">
-            Problemi, idee, richieste? Scrivici: rispondiamo appena possibile.
-          </p>
-        </div>
-      </div>
-
-      <!-- Form -->
-      <div class="card">
-        <div class="card-body">
-          <h3>Scrivici un messaggio</h3>
-          <form class="mt-3" onsubmit="location.href='mailto:info@example.com?subject='+encodeURIComponent(this.subject.value)+'&body='+encodeURIComponent(this.message.value); return false;">
-            <div class="form-group">
-              <label class="form-label">Oggetto</label>
-              <input class="form-input" name="subject" placeholder="Oggetto del messaggio" required>
+<body class="content-page">
+    <!-- Header Component -->
+    <div id="headerComponent"></div>
+    
+    <!-- Main Content -->
+    <main id="mainContent" class="main-content">
+        <div class="content-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Contatti e Supporto</h1>
+                <p class="page-subtitle">
+                    Siamo qui per aiutarti. Contattaci per assistenza, feedback o domande su GymTracker
+                </p>
+                <div class="page-meta">
+                    <span class="update-date">Supporto attivo 24/7</span>
+                    <span class="version">Risposta entro 24h</span>
+                </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">Messaggio</label>
-              <textarea class="form-textarea" name="message" rows="6" placeholder="Scrivi qui..." required></textarea>
+
+            <!-- Quick Support Options -->
+            <div class="support-options">
+                <div class="support-card">
+                    <div class="support-icon">🚀</div>
+                    <h3>Avvio Rapido</h3>
+                    <p>Prima volta su GymTracker? Inizia qui!</p>
+                    <button onclick="showQuickStart()" class="support-btn">Guida Rapida</button>
+                </div>
+                <div class="support-card">
+                    <div class="support-icon">❓</div>
+                    <h3>FAQ</h3>
+                    <p>Le risposte alle domande più comuni</p>
+                    <button onclick="showFAQ()" class="support-btn">Vedi FAQ</button>
+                </div>
+                <div class="support-card">
+                    <div class="support-icon">📧</div>
+                    <h3>Contatto Diretto</h3>
+                    <p>Scrivi al nostro team di supporto</p>
+                    <button onclick="showContactForm()" class="support-btn">Contattaci</button>
+                </div>
             </div>
-            <button class="btn btn-primary" type="submit"><i class="fas fa-paper-plane"></i> Invia</button>
-          </form>
-          <p class="text-sm text-secondary mt-2">Questo modulo apre il tuo client email.</p>
-        </div>
-      </div>
-    </div>
 
-    <div class="text-center mt-6">
-      <a class="btn btn-secondary" href="home.html"><i class="fas fa-arrow-left"></i> Torna alla Home</a>
-      <a class="btn btn-primary" href="index.html"><i class="fas fa-rocket"></i> Apri l’App</a>
-    </div>
-  </main>
+            <!-- Content Sections -->
+            <div class="terms-content">
 
-  <footer class="footer">
-    <div class="container">
-      <div class="cols">
-        <div>
-          <div class="badge">GymTracker</div>
-          <p class="mt-2 text-muted">© 2025</p>
-        </div>
-        <div>
-          <a href="privacy.html">Privacy</a><br>
-          <a href="terms.html">Termini</a>
-        </div>
-        <div>
-          <a href="index.html">Apri l’App</a><br>
-          <a href="calendario.html">Calendario</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+                <!-- FAQ Section -->
+                <section class="terms-section" id="faqSection">
+                    <h2>Domande Frequenti (FAQ)</h2>
+                    
+                    <div class="faq-container">
+                        <div class="faq-item">
+                            <button class="faq-question" onclick="toggleFAQ(this)">
+                                <span>Come creo la mia prima scheda di allenamento?</span>
+                                <span class="faq-arrow">▼</span>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Per creare la tua prima scheda:</p>
+                                <ol>
+                                    <li>Vai alla sezione "Le Mie Schede" dal menu principale</li>
+                                    <li>Clicca su "Nuova Scheda"</li>
+                                    <li>Inserisci nome e descrizione della scheda</li>
+                                    <li>Aggiungi gli esercizi uno per uno</li>
+                                    <li>Specifica serie, ripetizioni e peso per ogni esercizio</li>
+                                    <li>Salva la scheda per utilizzarla nei tuoi allenamenti</li>
+                                </ol>
+                            </div>
+                        </div>
 
+                        <div class="faq-item">
+                            <button class="faq-question" onclick="toggleFAQ(this)">
+                                <span>Come posso monitorare i miei progressi?</span>
+                                <span class="faq-arrow">▼</span>
+                            </button>
+                            <div class="faq-answer">
+                                <p>GymTracker offre diversi modi per monitorare i progressi:</p>
+                                <ul>
+                                    <li><strong>Dashboard Hub:</strong> panoramica generale delle tue attività</li>
+                                    <li><strong>Statistiche schede:</strong> visualizza l'evoluzione di ogni esercizio</li>
+                                    <li><strong>Calendario:</strong> traccia la frequenza dei tuoi allenamenti</li>
+                                    <li><strong>Profilo:</strong> aggiorna i tuoi obiettivi e visualizza i risultati</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" onclick="toggleFAQ(this)">
+                                <span>I miei dati sono sicuri?</span>
+                                <span class="faq-arrow">▼</span>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Assolutamente sì! La sicurezza dei tuoi dati è la nostra priorità:</p>
+                                <ul>
+                                    <li>Tutti i dati sono crittografati con protocolli HTTPS/TLS</li>
+                                    <li>I server sono protetti da firewall avanzati</li>
+                                    <li>Rispettiamo pienamente il GDPR</li>
+                                    <li>Non condividiamo mai i tuoi dati con terze parti</li>
+                                    <li>Puoi cancellare il tuo account e tutti i dati in qualsiasi momento</li>
+                                </ul>
+                                <p>Per maggiori dettagli, consulta la nostra <a href="privacy.html" class="internal-link">Privacy Policy</a>.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" onclick="toggleFAQ(this)">
+                                <span>Posso utilizzare GymTracker offline?</span>
+                                <span class="faq-arrow">▼</span>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Attualmente GymTracker richiede una connessione internet per sincronizzare i dati in tempo reale. Tuttavia, stiamo lavorando per implementare:</p>
+                                <ul>
+                                    <li>Modalità offline per consultare le schede già caricate</li>
+                                    <li>Sincronizzazione automatica quando torni online</li>
+                                    <li>App mobile con funzionalità offline estese</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" onclick="toggleFAQ(this)">
+                                <span>Come posso cambiare la mia password?</span>
+                                <span class="faq-arrow">▼</span>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Per cambiare la password:</p>
+                                <ol>
+                                    <li>Vai alla sezione "Profilo" dal menu principale</li>
+                                    <li>Clicca su "Impostazioni Account"</li>
+                                    <li>Seleziona "Cambia Password"</li>
+                                    <li>Inserisci la password attuale e quella nuova</li>
+                                    <li>Conferma le modifiche</li>
+                                </ol>
+                                <p>La nuova password deve essere di almeno 8 caratteri e contenere lettere e numeri.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <button class="faq-question" onclick="toggleFAQ(this)">
+                                <span>GymTracker fornisce consigli medici?</span>
+                                <span class="faq-arrow">▼</span>
+                            </button>
+                            <div class="faq-answer">
+                                <div class="disclaimer-box">
+                                    <h3>⚠️ Importante - Disclaimer Medico</h3>
+                                    <p>
+                                        <strong>NO, GymTracker NON fornisce consigli medici.</strong> 
+                                        Il nostro servizio è uno strumento di supporto per organizzare 
+                                        i tuoi allenamenti, non sostituisce il parere di medici, 
+                                        fisioterapisti o personal trainer qualificati.
+                                    </p>
+                                </div>
+                                <p>Prima di iniziare qualsiasi programma di allenamento, consulta sempre un medico, specialmente se hai condizioni di salute particolari.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Contact Form Section -->
+                <section class="terms-section" id="contactFormSection" style="display: none;">
+                    <h2>Modulo di Contatto</h2>
+                    <p>Compila il modulo sottostante per inviarci una richiesta di supporto. Ti risponderemo entro 24 ore.</p>
+                    
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-group">
+                            <label for="contactName">Nome Completo *</label>
+                            <input type="text" id="contactName" name="name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contactEmail">Email *</label>
+                            <input type="email" id="contactEmail" name="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contactSubject">Oggetto *</label>
+                            <select id="contactSubject" name="subject" required>
+                                <option value="">Seleziona un argomento...</option>
+                                <option value="technical">Problema Tecnico</option>
+                                <option value="account">Gestione Account</option>
+                                <option value="feature">Richiesta Funzionalità</option>
+                                <option value="bug">Segnalazione Bug</option>
+                                <option value="privacy">Privacy e Dati</option>
+                                <option value="billing">Fatturazione</option>
+                                <option value="other">Altro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contactPriority">Priorità</label>
+                            <select id="contactPriority" name="priority">
+                                <option value="low">Bassa - Risposta entro 72h</option>
+                                <option value="medium" selected>Media - Risposta entro 24h</option>
+                                <option value="high">Alta - Risposta entro 8h</option>
+                                <option value="urgent">Urgente - Risposta entro 2h</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contactMessage">Messaggio *</label>
+                            <textarea id="contactMessage" name="message" rows="6" required 
+                                placeholder="Descrivi il tuo problema o richiesta in dettaglio. Più informazioni ci fornisci, meglio potremo aiutarti."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="contactPrivacy" name="privacy" required>
+                                <span class="checkmark"></span>
+                                Ho letto e accetto la <a href="privacy.html" class="internal-link">Privacy Policy</a> *
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="contactNewsletter" name="newsletter">
+                                <span class="checkmark"></span>
+                                Desidero ricevere aggiornamenti e newsletter di GymTracker
+                            </label>
+                        </div>
+
+                        <button type="submit" class="contact-submit">
+                            Invia Richiesta
+                        </button>
+                    </form>
+
+                    <div class="form-success" id="formSuccess" style="display: none;">
+                        <h3>✅ Messaggio Inviato!</h3>
+                        <p>Grazie per averci contattato. Ti risponderemo al più presto all'indirizzo email fornito.</p>
+                        <p><strong>Numero ticket:</strong> <span id="ticketNumber"></span></p>
+                    </div>
+                </section>
+
+                <!-- Quick Start Guide -->
+                <section class="terms-section" id="quickStartSection" style="display: none;">
+                    <h2>Guida Rapida</h2>
+                    <p>Benvenuto su GymTracker! Segui questi passaggi per iniziare:</p>
+                    
+                    <div class="quick-start-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Completa il tuo Profilo</h3>
+                                <p>Vai su "Profilo" e inserisci età, livello di fitness e obiettivi. Questo ci aiuta a personalizzare la tua esperienza.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Crea la tua prima Scheda</h3>
+                                <p>Clicca su "Le Mie Schede" e crea la tua prima scheda di allenamento. Aggiungi gli esercizi che preferisci.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Pianifica nel Calendario</h3>
+                                <p>Usa il "Calendario" per programmare i tuoi allenamenti e mantenere una routine costante.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>Monitora i Progressi</h3>
+                                <p>Torna regolarmente al "Hub" per vedere le statistiche e monitorare i tuoi miglioramenti.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Direct Contact Info -->
+                <section class="terms-section">
+                    <h2>Contatti Diretti</h2>
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <div class="contact-icon">📧</div>
+                            <div class="contact-details">
+                                <h3>Email Supporto</h3>
+                                <p><strong>support@gymtracker.com</strong></p>
+                                <p>Risposta entro 24 ore</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-method">
+                            <div class="contact-icon">🔒</div>
+                            <div class="contact-details">
+                                <h3>Privacy e Dati</h3>
+                                <p><strong>privacy@gymtracker.com</strong></p>
+                                <p>Per questioni relative a GDPR e privacy</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-method">
+                            <div class="contact-icon">🚨</div>
+                            <div class="contact-details">
+                                <h3>Emergenze Tecniche</h3>
+                                <p><strong>urgent@gymtracker.com</strong></p>
+                                <p>Solo per problemi critici - Risposta entro 2 ore</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-method">
+                            <div class="contact-icon">💡</div>
+                            <div class="contact-details">
+                                <h3>Feedback e Suggerimenti</h3>
+                                <p><strong>feedback@gymtracker.com</strong></p>
+                                <p>Le tue idee per migliorare GymTracker</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Social Links -->
+                <section class="terms-section">
+                    <h2>Seguici Online</h2>
+                    <div class="social-links">
+                        <p>Resta aggiornato sulle novità e connettiti con la community GymTracker:</p>
+                        <div class="social-buttons">
+                            <a href="#" class="social-btn disabled">
+                                📘 Facebook
+                                <span class="coming-soon">Prossimamente</span>
+                            </a>
+                            <a href="#" class="social-btn disabled">
+                                📸 Instagram  
+                                <span class="coming-soon">Prossimamente</span>
+                            </a>
+                            <a href="#" class="social-btn disabled">
+                                🐦 Twitter
+                                <span class="coming-soon">Prossimamente</span>
+                            </a>
+                            <a href="#" class="social-btn disabled">
+                                💼 LinkedIn
+                                <span class="coming-soon">Prossimamente</span>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="page-navigation">
+                <a href="privacy.html" class="nav-button">
+                    ← Privacy Policy
+                </a>
+                <a href="app.html" class="nav-button">
+                    Torna al Dashboard →
+                </a>
+            </div>
+
+        </div>
+    </main>
+    
+    <!-- Footer Component -->
+    <div id="footerComponent"></div>
+    
+    <!-- Shared JavaScript -->
+    <script src="js/core/utils.js"></script>
+    <script src="js/core/template-loader.js"></script>
+    <script src="js/core/menu.js"></script>
+    <script src="js/core/auth.js"></script>
+    
+    <!-- Page specific JavaScript -->
+    <script>
+        // FAQ Toggle Function
+        function toggleFAQ(button) {
+            const faqItem = button.parentElement;
+            const answer = faqItem.querySelector('.faq-answer');
+            const arrow = button.querySelector('.faq-arrow');
+            
+            const isOpen = faqItem.classList.contains('open');
+            
+            // Close all other FAQ items
+            document.querySelectorAll('.faq-item.open').forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('open');
+                    item.querySelector('.faq-arrow').textContent = '▼';
+                }
+            });
+            
+            // Toggle current item
+            if (isOpen) {
+                faqItem.classList.remove('open');
+                arrow.textContent = '▼';
+            } else {
+                faqItem.classList.add('open');
+                arrow.textContent = '▲';
+            }
+        }
+
+        // Show/Hide sections
+        function showFAQ() {
+            document.getElementById('faqSection').style.display = 'block';
+            document.getElementById('contactFormSection').style.display = 'none';
+            document.getElementById('quickStartSection').style.display = 'none';
+            
+            // Scroll to FAQ
+            document.getElementById('faqSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showContactForm() {
+            document.getElementById('faqSection').style.display = 'none';
+            document.getElementById('contactFormSection').style.display = 'block';
+            document.getElementById('quickStartSection').style.display = 'none';
+            
+            // Scroll to form
+            document.getElementById('contactFormSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showQuickStart() {
+            document.getElementById('faqSection').style.display = 'none';
+            document.getElementById('contactFormSection').style.display = 'none';
+            document.getElementById('quickStartSection').style.display = 'block';
+            
+            // Scroll to quick start
+            document.getElementById('quickStartSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Contact form handler
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simulate form submission
+            const formData = new FormData(this);
+            const ticketNumber = 'GT' + Date.now().toString().slice(-6);
+            
+            // Show success message
+            document.getElementById('contactForm').style.display = 'none';
+            document.getElementById('ticketNumber').textContent = ticketNumber;
+            document.getElementById('formSuccess').style.display = 'block';
+            
+            // In a real app, you would send the data to your backend
+            console.log('Form submitted:', Object.fromEntries(formData));
+        });
+
+        // Initialize template loader
+        document.addEventListener('DOMContentLoaded', () => {
+            TemplateLoader.init('contatti');
+            
+            // Show FAQ by default
+            showFAQ();
+        });
+    </script>
+    
+    <!-- Additional CSS for this page -->
+    <style>
+        /* Support Options Cards */
+        .support-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .support-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .support-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .support-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .support-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .support-btn:hover {
+            background: #2563eb;
+        }
+
+        /* FAQ Styles */
+        .faq-container {
+            margin-top: 2rem;
+        }
+
+        .faq-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .faq-question {
+            width: 100%;
+            background: #f8fafc;
+            border: none;
+            padding: 1.5rem;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: background 0.2s ease;
+        }
+
+        .faq-question:hover {
+            background: #f1f5f9;
+        }
+
+        .faq-item.open .faq-question {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 500px;
+            padding: 1.5rem;
+        }
+
+        /* Contact Form */
+        .contact-form {
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            cursor: pointer;
+        }
+
+        .contact-submit {
+            width: 100%;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .contact-submit:hover {
+            background: #2563eb;
+        }
+
+        .form-success {
+            text-align: center;
+            padding: 2rem;
+            background: #f0fdf4;
+            border: 2px solid #22c55e;
+            border-radius: 8px;
+            color: #15803d;
+        }
+
+        /* Quick Start Steps */
+        .quick-start-steps {
+            margin-top: 2rem;
+        }
+
+        .step {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            background: #3b82f6;
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+
+        /* Contact Methods */
+        .contact-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .contact-method {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            align-items: flex-start;
+        }
+
+        .contact-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .contact-details h3 {
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+
+        .contact-details p {
+            margin-bottom: 0.25rem;
+            color: #6b7280;
+        }
+
+        /* Social Links */
+        .social-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: #f3f4f6;
+            color: #6b7280;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+            position: relative;
+        }
+
+        .social-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .coming-soon {
+            font-size: 0.75rem;
+            background: #fbbf24;
+            color: #92400e;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .support-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .social-buttons {
+                flex-direction: column;
+            }
+            
+            .social-btn {
+                justify-content: center;
+            }
+        }
+    </style>
 </body>
 </html>
