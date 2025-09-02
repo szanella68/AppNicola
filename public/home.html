@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GymTracker • Benvenuto</title>
+  <base href="/nicola/">
+
+  <!-- Fonts & Icone -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- CSS comune -->
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+  <!-- Header: SOLO Login -->
+  <header class="header">
+    <div class="container">
+      <nav class="navbar">
+        <a href="home.html" class="logo"><i class="fas fa-dumbbell"></i> GymTracker</a>
+        <div class="nav-actions">
+          <div class="nav-links"><!-- intenzionalmente vuoto: niente navigazione pubblica --></div>
+          <a class="btn btn-primary" href="index.html#/login">
+            <i class="fas fa-sign-in-alt"></i> Accedi
+          </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <h1>Allenati con metodo, senza frizioni</h1>
+      <p>GymTracker ti aiuta a creare schede, seguire i progressi e tenere il ritmo. Un passo alla volta.</p>
+      <div class="flex gap-4 items-center justify-center mt-4">
+        <a class="btn btn-primary" href="index.html#/login">
+          <i class="fas fa-rocket"></i> Entra con il tuo account
+        </a>
+        <a class="btn btn-secondary" href="#mission">
+          <i class="fas fa-bullseye"></i> La nostra missione
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission -->
+  <main class="container p-4" id="mission">
+    <div class="card" style="max-width: 900px; margin: 2rem auto;">
+      <div class="card-header">
+        <h2>Perché esiste GymTracker</h2>
+        <p class="text-secondary">Meno caos, più costanza. Tutto qui.</p>
+      </div>
+      <div class="card-body">
+        <div class="grid grid-cols-3">
+          <div>
+            <h3 style="margin-bottom:.5rem;">Chiarezza</h3>
+            <p class="text-secondary">Schede semplici da creare, leggere e aggiornare. Zero complicazioni inutili.</p>
+          </div>
+          <div>
+            <h3 style="margin-bottom:.5rem;">Focus</h3>
+            <p class="text-secondary">Monitora serie e progressi, così capisci cosa funziona davvero per te.</p>
+          </div>
+          <div>
+            <h3 style="margin-bottom:.5rem;">Abitudine</h3>
+            <p class="text-secondary">Routine sostenibili, non sprint. L’obiettivo è stare bene nel tempo.</p>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+          <a class="btn btn-primary" href="index.html#/login">
+            <i class="fas fa-sign-in-alt"></i> Accedi per iniziare
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ breve (senza uscire dalla landing) -->
+    <div class="card" style="max-width: 900px; margin: 2rem auto;">
+      <div class="card-header">
+        <h2>Domande rapide</h2>
+      </div>
+      <div class="card-body">
+        <div class="grid grid-cols-2">
+          <div>
+            <h4>Serve registrarsi?</h4>
+            <p class="text-secondary">Sì. L’area operativa è riservata: si entra con il tuo account.</p>
+          </div>
+          <div>
+            <h4>Posso provare ora?</h4>
+            <p class="text-secondary">Certo: clicca “Accedi”. Se non hai un account, lo crei dalla schermata di login.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer: solo info legali/contatti -->
+  <footer class="footer" style="padding:2rem 0; background:var(--bg-primary); border-top:1px solid var(--border-color);">
+    <div class="container">
+      <div class="flex justify-between items-center" style="gap:1rem; flex-wrap:wrap;">
+        <div class="text-secondary">© 2025 GymTracker</div>
+        <div class="flex" style="gap:1rem;">
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Termini</a>
+          <a href="contatti.html">Contatti</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

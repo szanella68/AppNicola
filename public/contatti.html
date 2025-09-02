@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contatti • GymTracker</title>
+  <base href="/nicola/">
+
+  <!-- Fonts & Icone -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- CSS comune -->
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <nav class="navbar">
+        <a href="home.html" class="logo"><i class="fas fa-dumbbell"></i> GymTracker</a>
+        <div class="nav-actions">
+          <a href="home.html">Home</a>
+          <a href="index.html">App</a>
+          <a href="calendario.html">Calendario</a>
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Termini</a>
+          <a href="contatti.html"><strong>Contatti</strong></a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container section">
+    <div class="section-header">
+      <div class="title">
+        <span class="badge">Parliamone</span>
+        <h2>Contattaci</h2>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <!-- Info -->
+      <div class="card">
+        <div class="card-body">
+          <h3>Dove trovarci</h3>
+          <p class="mt-2">
+            Supporto generale: <a href="mailto:info@example.com">info@example.com</a><br>
+            Privacy: <a href="mailto:privacy@example.com">privacy@example.com</a><br>
+            Legale: <a href="mailto:legal@example.com">legal@example.com</a>
+          </p>
+          <hr>
+          <h3 class="mt-3">Segnalazioni e feedback</h3>
+          <p class="mt-2">
+            Problemi, idee, richieste? Scrivici: rispondiamo appena possibile.
+          </p>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="card">
+        <div class="card-body">
+          <h3>Scrivici un messaggio</h3>
+          <form class="mt-3" onsubmit="location.href='mailto:info@example.com?subject='+encodeURIComponent(this.subject.value)+'&body='+encodeURIComponent(this.message.value); return false;">
+            <div class="form-group">
+              <label class="form-label">Oggetto</label>
+              <input class="form-input" name="subject" placeholder="Oggetto del messaggio" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Messaggio</label>
+              <textarea class="form-textarea" name="message" rows="6" placeholder="Scrivi qui..." required></textarea>
+            </div>
+            <button class="btn btn-primary" type="submit"><i class="fas fa-paper-plane"></i> Invia</button>
+          </form>
+          <p class="text-sm text-secondary mt-2">Questo modulo apre il tuo client email.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-6">
+      <a class="btn btn-secondary" href="home.html"><i class="fas fa-arrow-left"></i> Torna alla Home</a>
+      <a class="btn btn-primary" href="index.html"><i class="fas fa-rocket"></i> Apri l’App</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="cols">
+        <div>
+          <div class="badge">GymTracker</div>
+          <p class="mt-2 text-muted">© 2025</p>
+        </div>
+        <div>
+          <a href="privacy.html">Privacy</a><br>
+          <a href="terms.html">Termini</a>
+        </div>
+        <div>
+          <a href="index.html">Apri l’App</a><br>
+          <a href="calendario.html">Calendario</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

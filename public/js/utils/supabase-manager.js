@@ -2,30 +2,37 @@
  * Supabase Manager - Gestione inizializzazione Supabase e sessioni
  */
 class SupabaseManager {
+  static _booted = false;
+
   static async initialize() {
     try {
-      if (typeof supabase === 'undefined') {
-        throw new Error('Supabase CDN non caricato');
+      if (this._booted && window.supabaseClient) {
+        return true; // già inizializzato
       }
-      if (typeof supabase.createClient !== 'function') {
-        throw new Error('createClient non disponibile');
-      }
-      
-      // Usa la configurazione caricata dinamicamente
-      if (!window.SUPABASE_CONFIG) {
-        throw new Error('Configurazione non caricata');
-      }
-      
+      if (typeof supabase === 'undefined') throw new Error('Supabase CDN non caricato');
+      if (typeof supabase.createClient !== 'function') throw new Error('createClient non disponibile');
+      if (!window.SUPABASE_CONFIG) throw new Error('Configurazione non caricata');
+
+      // Client con persistenza robusta
       window.supabaseClient = supabase.createClient(
-        window.SUPABASE_CONFIG.SUPABASE_URL, 
-        window.SUPABASE_CONFIG.SUPABASE_ANON_KEY
+        window.SUPABASE_CONFIG.SUPABASE_URL,
+        window.SUPABASE_CONFIG.SUPABASE_ANON_KEY,
+        {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            storage: localStorage, // esplicito
+          },
+        }
       );
-      
+
       console.log('✅ Supabase inizializzato correttamente');
-      
-      // Gestisce sessioni da hash (conferma email)
+
+      // Gestisce eventuale conferma via hash (ok anche con detectSessionInUrl)
       await this.handleSessionFromHash();
-      
+
+      this._booted = true;
       return true;
     } catch (e) {
       console.error('❌ Errore inizializzazione Supabase:', e);
@@ -40,7 +47,7 @@ class SupabaseManager {
       console.log('[Supabase] Nessun access_token trovato nella hash.');
       return;
     }
-    
+
     const params = new URLSearchParams(hash);
     const access_token = params.get('access_token');
     const refresh_token = params.get('refresh_token');
@@ -50,65 +57,15 @@ class SupabaseManager {
 
     try {
       if (access_token && window.supabaseClient) {
-        // Imposta la sessione in Supabase
-        await window.supabaseClient.auth.setSession({ 
-          access_token, 
-          refresh_token 
-        });
-        
-        // Salva nel localStorage
-        localStorage.setItem('supabase_token', access_token);
-        
-        // Ottieni i dati utente
-        const { data: { user }, error } = await window.supabaseClient.auth.getUser();
-        
-        if (error) {
-          console.error('[Supabase] Errore getUser dopo conferma:', error);
-          DOMUtils.showAlert('Errore durante la conferma email. Riprova il login.', 'error');
-          return;
-        }
+        // Imposta la sessione in Supabase (persistita)
+        await window.supabaseClient.auth.setSession({ access_token, refresh_token });
 
-        if (user) {
-          // Salva dati utente
-          const userData = {
-            id: user.id,
-            email: user.email,
-            fullName: user.user_metadata?.full_name || user.email
-          };
-          
-          localStorage.setItem('supabase_user', JSON.stringify(userData));
-          
-          DOMUtils.showAlert('Email confermata! Benvenuto.', 'success');
-          
-          // Crea profilo automaticamente se non esiste
-          try {
-            await window.apiUtils.profile('onboarding', {
-              id: user.id,
-              email: user.email,
-              full_name: userData.fullName
-            }, 'POST');
-            
-            DOMUtils.showAlert('Profilo creato! Verrai reindirizzato all\'onboarding.', 'success');
-            
-            // Redirect dopo un breve delay
-            setTimeout(() => {
-              window.location.href = '/nicola/';
-            }, 1500);
-            
-          } catch (err) {
-            console.error('Errore onboarding automatico:', err);
-            DOMUtils.showAlert('Conferma completata! Procedi con la configurazione.', 'success');
-          }
-        } else {
-          DOMUtils.showAlert('Conferma email riuscita, ma nessun utente trovato. Effettua il login.', 'warning');
-        }
-        
-        // Pulisci URL dalla hash
+        // Pulisci URL dalla hash per non rielaborarla
         history.replaceState(null, '', window.location.pathname);
       }
     } catch (e) {
       console.error('handleSessionFromHash failed:', e);
-      DOMUtils.showAlert('Errore di sessione dopo conferma email. Riprova il login.', 'error');
+      DOMUtils?.showAlert?.('Errore di sessione dopo conferma email. Riprova il login.', 'error');
     }
   }
 
@@ -116,10 +73,8 @@ class SupabaseManager {
   static async getSession() {
     try {
       if (!window.supabaseClient) return null;
-      
       const { data: { session }, error } = await window.supabaseClient.auth.getSession();
       if (error) throw error;
-      
       return session;
     } catch (e) {
       console.error('Errore ottenimento sessione:', e);
@@ -131,10 +86,8 @@ class SupabaseManager {
   static async getCurrentUser() {
     try {
       if (!window.supabaseClient) return null;
-      
       const { data: { user }, error } = await window.supabaseClient.auth.getUser();
       if (error) throw error;
-      
       return user;
     } catch (e) {
       console.error('Errore ottenimento utente corrente:', e);
@@ -148,7 +101,12 @@ class SupabaseManager {
 
     window.supabaseClient.auth.onAuthStateChange((event, session) => {
       console.log('[Supabase] Auth state change:', event, session?.user?.id);
-      
+
+      // Piccolo aggancio per chi ascolta (es. menu-state)
+      try {
+        window.dispatchEvent(new CustomEvent('gt:auth', { detail: { event, session } }));
+      } catch {}
+
       switch (event) {
         case 'SIGNED_IN':
           console.log('✅ User signed in');
@@ -158,21 +116,15 @@ class SupabaseManager {
           break;
         case 'TOKEN_REFRESHED':
           console.log('🔄 Token refreshed');
-          // Aggiorna il token nel localStorage
-          if (session?.access_token) {
-            localStorage.setItem('supabase_token', session.access_token);
-          }
           break;
       }
     });
   }
 
-  // Utility per verificare se Supabase è inizializzato
   static get isInitialized() {
     return !!window.supabaseClient;
   }
 
-  // Utility per ottenere il client
   static get client() {
     return window.supabaseClient;
   }

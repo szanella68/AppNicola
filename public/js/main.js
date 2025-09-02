@@ -12,34 +12,33 @@ class GymTrackerApp {
 
   async init() {
     console.log('🚀 GymTracker - Avvio applicazione...');
-    
+
     try {
-      // Step 1: Carica configurazione dinamica
+      // 1) Config
       await this.loadConfiguration();
-      
-      // Step 2: Inizializza Supabase
-      if (!await this.initializeSupabase()) {
+
+      // 2) Supabase
+      if (!(await this.initializeSupabase())) {
         throw new Error('Fallimento inizializzazione Supabase');
       }
-      
-      // Step 3: Inizializza moduli dell'applicazione
+
+      // 3) Moduli
       this.initializeModules();
-      
-      // Step 4: Setup event listeners
+
+      // 4) Event handlers
       this.setupEventHandlers();
-      
-      // Step 5: Setup gestori globali
+
+      // 5) Handlers globali (senza logout aggressivo)
       this.setupGlobalHandlers();
-      
-      // Step 6: Gestisci sessioni da hash (conferma email)
+
+      // 6) Hash post-conferma (già gestita da SupabaseManager)
       await this.handleUrlHash();
-      
-      // Step 7: Avvia autenticazione
+
+      // 7) Auth
       await this.startAuthentication();
-      
+
       this.isInitialized = true;
       console.log('✅ GymTracker avviato con successo!');
-      
     } catch (error) {
       console.error('💥 Errore avvio app:', error);
       this.handleStartupError(error);
@@ -49,12 +48,8 @@ class GymTrackerApp {
   async loadConfiguration() {
     try {
       console.log('🔧 Caricamento configurazione...');
-      
-      // Usa ConfigLoader se disponibile, altrimenti fallback
       if (window.ConfigLoader) {
         const config = await window.ConfigLoader.loadConfig();
-        
-        // Aggiorna API_BASE se necessario
         const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
         if (!isLocalhost && config.API_BASE) {
           window.apiUtils.API_BASE = config.API_BASE;
@@ -64,66 +59,56 @@ class GymTrackerApp {
         console.warn('⚠️ ConfigLoader non disponibile, uso configurazione di default');
       }
     } catch (error) {
-      console.warn('⚠️ Errore caricamento config, continuo con default:', error.message);
+      console.warn('⚠️ Errore caricamento config, continuo con default:', error?.message || error);
     }
   }
 
   async initializeSupabase() {
     console.log('🔗 Inizializzazione Supabase...');
-    
-    const success = await SupabaseManager.initialize();
-    
-    if (success) {
-      // Setup listener per cambi di stato auth
-      SupabaseManager.setupAuthStateListener();
+    const ok = await SupabaseManager.initialize();
+    if (ok) {
+      // SupabaseManager.setupAuthStateListener();
       return true;
     }
-    
     return false;
   }
 
   initializeModules() {
     console.log('🧩 Inizializzazione moduli...');
-    
-    // Inizializza i moduli principali
     this.authModule = new AuthModule();
     this.profileModule = new ProfileModule();
     this.workoutModule = new WorkoutModule();
-    
-    // Esponi globalmente per backward compatibility
+
+    // Export “di comodo” per debugging
     window.authModule = this.authModule;
     window.profileModule = this.profileModule;
     window.workoutModule = this.workoutModule;
-    
+
     console.log('✅ Moduli inizializzati');
   }
 
   setupEventHandlers() {
     console.log('🎛️ Setup event handlers...');
-    
     EventManager.setupEventListeners(
       this.authModule,
       this.profileModule,
       this.workoutModule
     );
-    
     EventManager.setupGlobalErrorHandlers();
     EventManager.setupAnimations();
   }
 
   setupGlobalHandlers() {
-    // Gestione visibilità pagina (pausa/riprendi operazioni)
+    // NIENTE logout su visibilitychange. Solo refresh "soft".
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
         console.log('📵 App nascosta');
       } else {
         console.log('👀 App visibile');
-        // Potremmo aggiornare i dati quando l'app torna visibile
-        this.handleAppVisible();
+        this.handleAppVisible(); // soft refresh
       }
     });
 
-    // Gestione cambio connessione
     window.addEventListener('online', () => {
       console.log('🌐 Connessione ristabilita');
       DOMUtils.showAlert('Connessione ristabilita', 'success');
@@ -136,10 +121,8 @@ class GymTrackerApp {
   }
 
   async handleUrlHash() {
-    // Gestisce hash per conferma email (già gestito in SupabaseManager)
     if (window.location.hash.includes('access_token=')) {
-      console.log('🔗 Hash con token rilevato');
-      // SupabaseManager.handleSessionFromHash() è già chiamato durante l'inizializzazione
+      console.log('🔗 Hash con token rilevato (gestito)');
     }
   }
 
@@ -148,120 +131,92 @@ class GymTrackerApp {
     await this.authModule.init();
   }
 
-  // Gestisce errori di avvio
   handleStartupError(error) {
     console.error('💥 Errore critico di avvio:', error);
-    
-    // Mostra messaggio all'utente
     const errorHtml = `
-      <div style="text-align: center; padding: 2rem; max-width: 500px; margin: 2rem auto;">
+      <div style="text-align:center; padding:2rem; max-width:520px; margin:2rem auto;">
         <div style="color: var(--danger-color); font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
         <h2 style="color: var(--danger-color);">Errore di Avvio</h2>
         <p>Si è verificato un errore durante l'avvio dell'applicazione.</p>
-        <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 1rem 0;">
-          ${error.message}
-        </p>
-        <button onclick="window.location.reload()" class="btn btn-primary" style="margin-top: 1rem;">
-          🔄 Ricarica Pagina
-        </button>
+        <p style="font-size:.9rem; color: var(--text-secondary); margin:1rem 0;">${error.message}</p>
+        <button onclick="window.location.reload()" class="btn btn-primary" style="margin-top:1rem;">🔄 Ricarica Pagina</button>
       </div>
     `;
-    
     document.body.innerHTML = errorHtml;
   }
 
-  // Chiamato quando l'app torna visibile
+  // Soft refresh quando la pagina torna visibile (niente logout qui)
   async handleAppVisible() {
     if (!this.isInitialized) return;
-
     try {
-      // Verifica se la sessione è ancora valida
+      // Ricalcola la rotta corrente per riallineare la vista/UI
+      const current = window.GTRouter?.current?.() || { name: 'default', params: {} };
+      window.dispatchEvent(new CustomEvent('gt:route', { detail: current }));
+
+      // Se già autenticato e hai dati, puoi rinfrescare le schede
       const session = await SupabaseManager.getSession();
-      
-      if (this.authModule.isAuthenticated && !session) {
-        console.warn('⚠️ Sessione scaduta, logout automatico');
-        this.authModule.logout();
-        DOMUtils.showAlert('Sessione scaduta. Effettua nuovamente il login.', 'warning');
-      }
-      
-      // Aggiorna dati se necessario
-      if (this.authModule.isAuthenticated && this.workoutModule.workouts.length > 0) {
-        // Ricarica schede solo se sono già state caricate
+      if (session && this.authModule?.isAuthenticated && this.workoutModule?.workouts?.length > 0) {
         await this.workoutModule.loadWorkouts();
       }
-    } catch (error) {
-      console.error('Errore durante aggiornamento visibilità:', error);
+    } catch (e) {
+      console.error('Errore durante refresh visibilità:', e);
     }
   }
 
-  // Utility per debugging
   getStatus() {
     return {
       initialized: this.isInitialized,
       supabaseReady: SupabaseManager.isInitialized,
       authenticated: this.authModule?.isAuthenticated || false,
       currentUser: this.authModule?.user || null,
-      workoutsCount: this.workoutModule?.workouts.length || 0
+      workoutsCount: this.workoutModule?.workouts.length || 0,
     };
   }
 
-  // Metodi pubblici per interazione esterna
   async refreshData() {
-    if (!this.isInitialized || !this.authModule.isAuthenticated) return;
-    
+    if (!this.isInitialized || !this.authModule?.isAuthenticated) return;
     try {
       DOMUtils.showLoading();
       await this.workoutModule.loadWorkouts();
       DOMUtils.showAlert('Dati aggiornati', 'success');
-    } catch (error) {
-      console.error('Errore aggiornamento dati:', error);
+    } catch (e) {
+      console.error('Errore aggiornamento dati:', e);
       DOMUtils.showAlert('Errore aggiornamento dati', 'error');
     } finally {
       DOMUtils.hideLoading();
     }
   }
 
-  // Cleanup per eventuali test o reload
   destroy() {
     console.log('🧹 Pulizia app...');
-    
-    // Reset moduli
     this.authModule?.reset?.();
     this.profileModule?.reset?.();
     this.workoutModule?.reset?.();
-    
-    // Rimuovi riferimenti globali
     delete window.authModule;
     delete window.profileModule;
     delete window.workoutModule;
     delete window.app;
-    
     this.isInitialized = false;
   }
 }
 
 // =====================
-// Bootstrap dell'applicazione
+// Bootstrap
 // =====================
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async () => {
   console.log('📄 DOM caricato, avvio GymTracker...');
-  
   try {
-    // Crea e avvia l'app
     window.app = new GymTrackerApp();
     await window.app.init();
-    
-    // Esponi funzioni di debug nella console
+
+    // utilità debug
     window.gymTrackerStatus = () => window.app.getStatus();
     window.gymTrackerRefresh = () => window.app.refreshData();
-    
-  } catch (error) {
-    console.error('💥 Errore bootstrap app:', error);
-    
-    // Fallback di emergenza
+  } catch (e) {
+    console.error('💥 Errore bootstrap app:', e);
     document.body.innerHTML = `
-      <div style="text-align: center; padding: 2rem;">
-        <h1 style="color: red;">Errore di Avvio</h1>
+      <div style="text-align:center; padding:2rem;">
+        <h1 style="color:red;">Errore di Avvio</h1>
         <p>Impossibile avviare l'applicazione.</p>
         <button onclick="window.location.reload()">Ricarica</button>
       </div>
@@ -269,7 +224,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 });
 
-// Export per eventuale uso in ambienti modulari futuri
+// Export opzionale
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = GymTrackerApp;
 }
