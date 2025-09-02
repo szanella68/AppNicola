@@ -138,7 +138,19 @@
     <!-- JavaScript -->
     <script src="js/core/template-loader.js"></script>
     <script src="js/core/menu-component.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="js/core/auth.js"></script>
+
+ <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        Auth.init();
+  // forza lo stato menu in base al login
+    Menu && (localStorage.getItem('gymtracker_user')
+      ? Menu.showPrivateMenu(JSON.parse(localStorage.getItem('gymtracker_user')))
+      : Menu.showPublicMenu());
+
+      });
+    </script>
+
     
     <!-- Template System will auto-initialize everything -->
 </body>
