@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{PAGE_TITLE}} | GymTracker</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="{{PAGE_DESCRIPTION}}">
+    <meta name="keywords" content="fitness, palestra, allenamento, schede, esercizi">
+    <meta name="author" content="The Guardians of Civilization">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/shared.css">
+    {{ADDITIONAL_CSS}}
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body class="{{BODY_CLASS}}">
+    <!-- Header Component -->
+    <div id="headerComponent"></div>
+    
+    <!-- Main Content -->
+    <main id="mainContent" class="main-content">
+        {{MAIN_CONTENT}}
+    </main>
+    
+    <!-- Footer Component -->
+    <div id="footerComponent"></div>
+    
+    <!-- Auth Modals Container -->
+    <div id="authModals"></div>
+    
+    <!-- Shared JavaScript -->
+    <script src="js/core/utils.js"></script>
+    <script src="js/core/template-loader.js"></script>
+    <script src="js/core/menu.js"></script>
+    <script src="js/core/auth.js"></script>
+    
+    <!-- Page Specific JavaScript -->
+    {{ADDITIONAL_JS}}
+    
+    <!-- Initialize -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            TemplateLoader.init('{{PAGE_TYPE}}');
+        });
+    </script>
+</body>
+</html>

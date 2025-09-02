@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymTracker - Hub Servizi</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/menu-component.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            line-height: 1.6;
+            color: #1f2937;
+            background: #f9fafb;
+        }
+        
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .welcome {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .welcome h1 {
+            font-size: 2.5rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .welcome p {
+            font-size: 1.1rem;
+            color: #6b7280;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        
+        .service-description {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+        
+        .service-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+        
+        .service-button:hover {
+            background: #2563eb;
+        }
+        
+        .stats {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .stats h2 {
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-item {
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 640px) {
+            .main-content { padding: 1rem; }
+            .welcome h1 { font-size: 2rem; }
+            .services-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Component -->
+    <header class="app-header" id="appHeader">
+      <div class="header-content">
+        <div class="brand">
+          <a href="#" onclick="Menu.goHome()" class="brand-link">
+            🏋️ <span class="brand-text">GymTracker</span>
+          </a>
+        </div>
+        
+        <div class="menu-public hidden" id="menuPublic">
+          <div class="auth-buttons">
+            <button class="btn-login" onclick="Auth.showLogin()">Accedi</button>
+            <button class="btn-register" onclick="Auth.showRegister()">Registrati</button>
+          </div>
+        </div>
+        
+        <div class="menu-private" id="menuPrivate">
+          <div class="menu-dropdown" id="mainMenu">
+            <button class="menu-trigger" onclick="Menu.toggle()" id="menuTrigger">
+              <span class="user-greeting" id="userGreeting">Ciao Mario!</span>
+              <span class="arrow" id="dropdownArrow">▼</span>
+            </button>
+            
+            <!-- Dropdown Content - UPDATED with all sections -->
+            <div class="dropdown-content" id="dropdownContent">
+              <!-- Core App Functions -->
+              <a href="#" onclick="Menu.goto('hub')" data-page="hub" class="dropdown-item active">
+                🏠 <span>Hub</span>
+              </a>
+              <a href="#" onclick="Menu.goto('schede')" data-page="schede" class="dropdown-item">
+                💪 <span>Le Mie Schede</span>
+              </a>
+              <a href="#" onclick="Menu.goto('calendario')" data-page="calendario" class="dropdown-item">
+                📅 <span>Calendario</span>
+              </a>
+              <a href="#" onclick="Menu.goto('profilo')" data-page="profilo" class="dropdown-item">
+                👤 <span>Profilo</span>
+              </a>
+              
+              <!-- First Divider -->
+              <div class="dropdown-divider"></div>
+              
+              <!-- Legal & Support -->
+              <a href="#" onclick="Menu.goto('terms')" data-page="terms" class="dropdown-item">
+                📋 <span>Terms & Condizioni</span>
+              </a>
+              <a href="#" onclick="Menu.goto('privacy')" data-page="privacy" class="dropdown-item">
+                🔒 <span>Privacy Policy</span>
+              </a>
+              <a href="#" onclick="Menu.goto('contatti')" data-page="contatti" class="dropdown-item">
+                ✉️ <span>Contatti & Supporto</span>
+              </a>
+              
+              <!-- Second Divider -->
+              <div class="dropdown-divider"></div>
+              
+              <!-- Logout -->
+              <a href="#" onclick="Auth.logout()" class="dropdown-item logout-item">
+                🚪 <span>Logout</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Welcome Section -->
+        <section class="welcome">
+            <h1>Benvenuto nel tuo Hub Fitness!</h1>
+            <p>Scegli cosa vuoi fare oggi per migliorare il tuo allenamento</p>
+        </section>
+        
+        <!-- Stats Section -->
+        <section class="stats">
+            <h2>I Tuoi Progressi</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalSchede">0</div>
+                    <div class="stat-label">Schede Totali</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalEsercizi">0</div>
+                    <div class="stat-label">Esercizi</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="weeklyWorkouts">0</div>
+                    <div class="stat-label">Allenamenti Settimana</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Services Grid -->
+        <section class="services-grid">
+            <div class="service-card" onclick="Menu.goto('schede')">
+                <div class="service-icon">💪</div>
+                <h3 class="service-title">Le Mie Schede</h3>
+                <p class="service-description">
+                    Crea, modifica e gestisci le tue schede di allenamento personalizzate. 
+                    Aggiungi esercizi, serie e ripetizioni.
+                </p>
+                <button class="service-button">Gestisci Schede</button>
+            </div>
+            
+            <div class="service-card" onclick="Menu.goto('calendario')">
+                <div class="service-icon">📅</div>
+                <h3 class="service-title">Calendario</h3>
+                <p class="service-description">
+                    Pianifica i tuoi allenamenti nel calendario settimanale. 
+                    Organizza le tue sessioni e monitora la costanza.
+                </p>
+                <button class="service-button">Apri Calendario</button>
+            </div>
+            
+            <div class="service-card" onclick="Menu.goto('profilo')">
+                <div class="service-icon">👤</div>
+                <h3 class="service-title">Profilo</h3>
+                <p class="service-description">
+                    Gestisci le tue informazioni personali, obiettivi fitness 
+                    e preferenze dell'applicazione.
+                </p>
+                <button class="service-button">Modifica Profilo</button>
+            </div>
+        </section>
+        
+        <!-- Content Area for Page Switching -->
+        <div id="pageContent" style="display: none;">
+            <!-- Dynamic content will be loaded here -->
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="js/menu-component.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            Menu.init();
+            Auth.init();
+            App.init();
+        });
+    </script>
+</body>
+</html>

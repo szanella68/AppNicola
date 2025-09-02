@@ -1,0 +1,68 @@
+<header class="app-header" id="appHeader" data-page-type="{{PAGE_TYPE}}">
+  <div class="header-content">
+    <!-- Brand/Logo -->
+    <div class="brand">
+      <a href="#" onclick="Menu.goHome()" class="brand-link">
+        🏋️ <span class="brand-text">GymTracker</span>
+      </a>
+    </div>
+    
+    <!-- Public Menu (for non-authenticated users) -->
+    <div class="menu-public auth-buttons" id="menuPublic">
+      <button class="btn-login" onclick="Auth.showLogin()">
+        Accedi
+      </button>
+      <button class="btn-register" onclick="Auth.showRegister()">
+        Registrati
+      </button>
+    </div>
+    
+    <!-- Private Menu (for authenticated users) -->
+    <div class="menu-private hidden" id="menuPrivate">
+      <div class="menu-dropdown" id="mainMenu">
+        <button class="menu-trigger" onclick="Menu.toggle()" id="menuTrigger">
+          <span class="user-greeting" id="userGreeting">Ciao Utente!</span>
+          <span class="arrow" id="dropdownArrow">▼</span>
+        </button>
+        
+        <div class="dropdown-content" id="dropdownContent">
+          <!-- Core App Functions -->
+          <a href="#" onclick="Menu.goto('hub')" data-page="hub" class="dropdown-item">
+            🏠 <span>Hub</span>
+          </a>
+          <a href="#" onclick="Menu.goto('schede')" data-page="schede" class="dropdown-item">
+            💪 <span>Le Mie Schede</span>
+          </a>
+          <a href="#" onclick="Menu.goto('calendario')" data-page="calendario" class="dropdown-item">
+            📅 <span>Calendario</span>
+          </a>
+          <a href="#" onclick="Menu.goto('profilo')" data-page="profilo" class="dropdown-item">
+            👤 <span>Profilo</span>
+          </a>
+          
+          <!-- First Divider -->
+          <div class="dropdown-divider"></div>
+          
+          <!-- Legal & Support -->
+          <a href="#" onclick="Menu.goto('terms')" data-page="terms" class="dropdown-item">
+            📋 <span>Terms & Condizioni</span>
+          </a>
+          <a href="#" onclick="Menu.goto('privacy')" data-page="privacy" class="dropdown-item">
+            🔒 <span>Privacy Policy</span>
+          </a>
+          <a href="#" onclick="Menu.goto('contatti')" data-page="contatti" class="dropdown-item">
+            ✉️ <span>Contatti & Supporto</span>
+          </a>
+          
+          <!-- Second Divider -->
+          <div class="dropdown-divider"></div>
+          
+          <!-- Logout -->
+          <a href="#" onclick="Auth.logout()" class="dropdown-item logout-item">
+            🚪 <span>Logout</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

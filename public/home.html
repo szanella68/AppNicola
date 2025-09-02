@@ -1,116 +1,267 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GymTracker • Benvenuto</title>
-  <base href="/nicola/">
-
-  <!-- Fonts & Icone -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- CSS comune -->
-  <link rel="stylesheet" href="css/app.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymTracker - Il tuo Personal Trainer Digitale</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/menu-component.css">
+    <style>
+        /* Minimal home page styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            line-height: 1.6;
+            color: #1f2937;
+        }
+        
+        /* AUTH BUTTONS STYLING */
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .btn-login {
+            background: transparent;
+            color: #3b82f6;
+            border: 1px solid #3b82f6;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            min-height: 44px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-login:hover {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-register {
+            background: #3b82f6;
+            color: white;
+            border: 1px solid #3b82f6;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            min-height: 44px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-register:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-content p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .cta-button {
+            background: white;
+            color: #3b82f6;
+            padding: 1rem 2rem;
+            border: 2px solid white;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .cta-button.secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .cta-button.secondary:hover {
+            background: white;
+            color: #3b82f6;
+        }
+        
+        .mission {
+            padding: 4rem 2rem;
+            background: #f9fafb;
+            text-align: center;
+        }
+        
+        .mission h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #1f2937;
+        }
+        
+        .mission p {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            color: #6b7280;
+        }
+        
+        @media (max-width: 640px) {
+            .auth-buttons { 
+                flex-direction: column; 
+                gap: 0.5rem; 
+            }
+            .hero-content h1 { font-size: 2rem; }
+            .hero-content p { font-size: 1rem; }
+            .hero { padding: 3rem 1rem; }
+            .hero-buttons { 
+                flex-direction: column; 
+                align-items: center; 
+            }
+        }
+    </style>
 </head>
 <body>
-
-  <!-- Header: SOLO Login -->
-  <header class="header">
-    <div class="container">
-      <nav class="navbar">
-        <a href="home.html" class="logo"><i class="fas fa-dumbbell"></i> GymTracker</a>
-        <div class="nav-actions">
-          <div class="nav-links"><!-- intenzionalmente vuoto: niente navigazione pubblica --></div>
-          <a class="btn btn-primary" href="index.html#/login">
-            <i class="fas fa-sign-in-alt"></i> Accedi
+    <!-- Menu Component -->
+    <header class="app-header" id="appHeader">
+      <div class="header-content">
+        <!-- Brand/Logo -->
+        <div class="brand">
+          <a href="#" onclick="Menu.goHome()" class="brand-link">
+            🏋️ <span class="brand-text">GymTracker</span>
           </a>
         </div>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Hero -->
-  <section class="hero">
-    <div class="container">
-      <h1>Allenati con metodo, senza frizioni</h1>
-      <p>GymTracker ti aiuta a creare schede, seguire i progressi e tenere il ritmo. Un passo alla volta.</p>
-      <div class="flex gap-4 items-center justify-center mt-4">
-        <a class="btn btn-primary" href="index.html#/login">
-          <i class="fas fa-rocket"></i> Entra con il tuo account
-        </a>
-        <a class="btn btn-secondary" href="#mission">
-          <i class="fas fa-bullseye"></i> La nostra missione
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Mission -->
-  <main class="container p-4" id="mission">
-    <div class="card" style="max-width: 900px; margin: 2rem auto;">
-      <div class="card-header">
-        <h2>Perché esiste GymTracker</h2>
-        <p class="text-secondary">Meno caos, più costanza. Tutto qui.</p>
-      </div>
-      <div class="card-body">
-        <div class="grid grid-cols-3">
-          <div>
-            <h3 style="margin-bottom:.5rem;">Chiarezza</h3>
-            <p class="text-secondary">Schede semplici da creare, leggere e aggiornare. Zero complicazioni inutili.</p>
-          </div>
-          <div>
-            <h3 style="margin-bottom:.5rem;">Focus</h3>
-            <p class="text-secondary">Monitora serie e progressi, così capisci cosa funziona davvero per te.</p>
-          </div>
-          <div>
-            <h3 style="margin-bottom:.5rem;">Abitudine</h3>
-            <p class="text-secondary">Routine sostenibili, non sprint. L’obiettivo è stare bene nel tempo.</p>
-          </div>
+        
+        <!-- Public Menu -->
+        <div class="menu-public auth-buttons" id="menuPublic">
+          <button class="btn-login" onclick="Auth.showLogin()">
+            Accedi
+          </button>
+          <button class="btn-register" onclick="Auth.showRegister()">
+            Registrati
+          </button>
         </div>
-        <div class="text-center mt-4">
-          <a class="btn btn-primary" href="index.html#/login">
-            <i class="fas fa-sign-in-alt"></i> Accedi per iniziare
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- FAQ breve (senza uscire dalla landing) -->
-    <div class="card" style="max-width: 900px; margin: 2rem auto;">
-      <div class="card-header">
-        <h2>Domande rapide</h2>
-      </div>
-      <div class="card-body">
-        <div class="grid grid-cols-2">
-          <div>
-            <h4>Serve registrarsi?</h4>
-            <p class="text-secondary">Sì. L’area operativa è riservata: si entra con il tuo account.</p>
-          </div>
-          <div>
-            <h4>Posso provare ora?</h4>
-            <p class="text-secondary">Certo: clicca “Accedi”. Se non hai un account, lo crei dalla schermata di login.</p>
+        
+        <!-- Private Menu (for authenticated users) -->
+        <div class="menu-private hidden" id="menuPrivate">
+          <div class="menu-dropdown" id="mainMenu">
+            <button class="menu-trigger" onclick="Menu.toggle()" id="menuTrigger">
+              <span class="user-greeting" id="userGreeting">Ciao Mario!</span>
+              <span class="arrow" id="dropdownArrow">▼</span>
+            </button>
+            
+            <!-- Dropdown Content - UPDATED with all sections -->
+            <div class="dropdown-content" id="dropdownContent">
+              <!-- Core App Functions -->
+              <a href="#" onclick="Menu.goto('hub')" data-page="hub" class="dropdown-item">
+                🏠 <span>Hub</span>
+              </a>
+              <a href="#" onclick="Menu.goto('schede')" data-page="schede" class="dropdown-item">
+                💪 <span>Le Mie Schede</span>
+              </a>
+              <a href="#" onclick="Menu.goto('calendario')" data-page="calendario" class="dropdown-item">
+                📅 <span>Calendario</span>
+              </a>
+              <a href="#" onclick="Menu.goto('profilo')" data-page="profilo" class="dropdown-item">
+                👤 <span>Profilo</span>
+              </a>
+              
+              <!-- First Divider -->
+              <div class="dropdown-divider"></div>
+              
+              <!-- Legal & Support -->
+              <a href="#" onclick="Menu.goto('terms')" data-page="terms" class="dropdown-item">
+                📋 <span>Terms & Condizioni</span>
+              </a>
+              <a href="#" onclick="Menu.goto('privacy')" data-page="privacy" class="dropdown-item">
+                🔒 <span>Privacy Policy</span>
+              </a>
+              <a href="#" onclick="Menu.goto('contatti')" data-page="contatti" class="dropdown-item">
+                ✉️ <span>Contatti & Supporto</span>
+              </a>
+              
+              <!-- Second Divider -->
+              <div class="dropdown-divider"></div>
+              
+              <!-- Logout -->
+              <a href="#" onclick="Auth.logout()" class="dropdown-item logout-item">
+                🚪 <span>Logout</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </main>
-
-  <!-- Footer: solo info legali/contatti -->
-  <footer class="footer" style="padding:2rem 0; background:var(--bg-primary); border-top:1px solid var(--border-color);">
-    <div class="container">
-      <div class="flex justify-between items-center" style="gap:1rem; flex-wrap:wrap;">
-        <div class="text-secondary">© 2025 GymTracker</div>
-        <div class="flex" style="gap:1rem;">
-          <a href="privacy.html">Privacy</a>
-          <a href="terms.html">Termini</a>
-          <a href="contatti.html">Contatti</a>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Il Tuo Personal Trainer Digitale</h1>
+            <p>Crea, gestisci e monitora le tue schede di allenamento personalizzate</p>
+            <div class="hero-buttons">
+                <button class="cta-button" onclick="Auth.showRegister()">
+                    🚀 Inizia Gratis
+                </button>
+                <button class="cta-button secondary" onclick="Auth.showLogin()">
+                    👤 Ho già un account
+                </button>
+            </div>
         </div>
-      </div>
-    </div>
-  </footer>
+    </section>
+    
+    <!-- Mission Section -->
+    <section class="mission" id="mission">
+        <h2>La Nostra Missione</h2>
+        <p>
+            GymTracker nasce per semplificare la gestione dei tuoi allenamenti. 
+            Crea schede personalizzate, monitora i progressi e mantieni la costanza 
+            nel tuo percorso fitness. Tutto in un'interfaccia semplice e intuitiva.
+        </p>
+    </section>
 
+    <!-- JavaScript -->
+    <script src="js/menu-component.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <script>
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            Menu.init();
+            Auth.init();
+        });
+    </script>
 </body>
 </html>
