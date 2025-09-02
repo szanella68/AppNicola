@@ -1,4 +1,5 @@
-<header class="app-header" id="appHeader" data-page-type="{{PAGE_TYPE}}">
+<!-- components/header.html -->
+<header class="app-header" id="appHeader">
   <div class="header-content">
     <!-- Brand/Logo -->
     <div class="brand">
@@ -21,10 +22,11 @@
     <div class="menu-private hidden" id="menuPrivate">
       <div class="menu-dropdown" id="mainMenu">
         <button class="menu-trigger" onclick="Menu.toggle()" id="menuTrigger">
-          <span class="user-greeting" id="userGreeting">Ciao Utente!</span>
+          <span class="user-greeting" id="userGreeting">Ciao Mario!</span>
           <span class="arrow" id="dropdownArrow">▼</span>
         </button>
         
+        <!-- Dropdown Content - COMPLETE with all sections -->
         <div class="dropdown-content" id="dropdownContent">
           <!-- Core App Functions -->
           <a href="#" onclick="Menu.goto('hub')" data-page="hub" class="dropdown-item">
@@ -66,3 +68,53 @@
     </div>
   </div>
 </header>
+
+<!-- Header-specific styles for auth buttons -->
+<style>
+  .auth-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  .btn-login {
+    background: transparent;
+    color: #3b82f6;
+    border: 1px solid #3b82f6;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    min-height: 44px;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-login:hover {
+    background: #3b82f6;
+    color: white;
+  }
+  
+  .btn-register {
+    background: #3b82f6;
+    color: white;
+    border: 1px solid #3b82f6;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    min-height: 44px;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-register:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+  }
+  
+  @media (max-width: 640px) {
+    .auth-buttons { 
+      flex-direction: column; 
+      gap: 0.5rem; 
+    }
+  }
+</style>

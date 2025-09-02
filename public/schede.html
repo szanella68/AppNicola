@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymTracker - Le Mie Schede</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/menu-component.css">
+    <link rel="stylesheet" href="css/shared.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            line-height: 1.6;
+            color: #1f2937;
+            background: #f9fafb;
+        }
+        
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: #1f2937;
+            margin: 0;
+        }
+        
+        .primary-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .primary-button:hover {
+            background: #2563eb;
+        }
+        
+        /* Schede Grid */
+        .schede-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .scheda-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+        
+        .scheda-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .scheda-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .scheda-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .scheda-description {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .scheda-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            background: none;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .action-btn.danger:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        
+        .scheda-exercises {
+            margin-top: 1rem;
+        }
+        
+        .exercise-count {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .exercise-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .exercise-tag {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #374151;
+        }
+        
+        .empty-state p {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Loading State */
+        .loading-state {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #1f2937;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0.25rem;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .secondary-button {
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .secondary-button:hover {
+            background: #f9fafb;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content { padding: 1rem; }
+            .page-header { flex-direction: column; align-items: stretch; }
+            .page-header h1 { font-size: 2rem; }
+            .schede-grid { grid-template-columns: 1fr; }
+            .scheda-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Container (Template System) -->
+    <div id="headerContainer"></div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>💪 Le Mie Schede di Allenamento</h1>
+            <button class="primary-button" onclick="Schede.showCreateModal()">
+                ➕ Nuova Scheda
+            </button>
+        </div>
+        
+        <!-- Schede List -->
+        <div class="schede-container">
+            <!-- Loading State -->
+            <div id="loadingState" class="loading-state">
+                <div class="spinner"></div>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-icon">📋</div>
+                <h3>Nessuna scheda ancora</h3>
+                <p>Crea la tua prima scheda di allenamento personalizzata! Aggiungi esercizi, serie e ripetizioni per iniziare il tuo percorso fitness.</p>
+                <button class="primary-button" onclick="Schede.showCreateModal()">
+                    🚀 Crea Prima Scheda
+                </button>
+            </div>
+            
+            <!-- Schede Grid -->
+            <div id="schedeGrid" class="schede-grid" style="display: none;">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Create/Edit Scheda Modal -->
+    <div id="schedaModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Crea Nuova Scheda</h3>
+                <button class="modal-close" onclick="Schede.closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="schedaForm">
+                    <div class="form-group">
+                        <label>Nome Scheda</label>
+                        <input type="text" id="schedaName" required placeholder="es. Push Pull Legs">
+                    </div>
+                    <div class="form-group">
+                        <label>Descrizione</label>
+                        <textarea id="schedaDescription" placeholder="Descrivi questa scheda di allenamento..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button class="secondary-button" onclick="Schede.closeModal()">Annulla</button>
+                <button class="primary-button" onclick="Schede.saveScheda()" id="saveButton">Salva Scheda</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Container (Template System) -->
+    <div id="footerContainer"></div>
+
+    <!-- JavaScript -->
+    <script src="js/core/template-loader.js"></script>
+    <script src="js/core/menu-component.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <!-- Page-specific Scripts -->
+    <script>
+        // Schede Page Logic (temporary, will move to separate file)
+        const Schede = {
+            currentScheda: null,
+            isLoading: false,
+            
+            init() {
+                console.log('🏃‍♂️ Initializing Schede page...');
+                this.loadSchede();
+                this.bindEvents();
+            },
+            
+            bindEvents() {
+                // Close modal on outside click
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('modal-overlay')) {
+                        this.closeModal();
+                    }
+                });
+                
+                // Close modal on ESC key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.closeModal();
+                    }
+                });
+            },
+            
+            async loadSchede() {
+                this.showLoading(true);
+                
+                try {
+                    // Simulate API call for now
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Mock data for testing
+                    const mockSchede = [
+                        {
+                            id: 1,
+                            name: "Push Pull Legs",
+                            description: "Scheda per sviluppo muscolare completo",
+                            exercises: ["Panca piana", "Shoulder press", "Dips", "Lat machine"],
+                            created_at: "2025-01-20"
+                        },
+                        {
+                            id: 2,
+                            name: "Full Body Beginner",
+                            description: "Allenamento completo per principianti",
+                            exercises: ["Squat", "Push up", "Plank", "Mountain climbers"],
+                            created_at: "2025-01-18"
+                        }
+                    ];
+                    
+                    this.renderSchede(mockSchede);
+                } catch (error) {
+                    console.error('Error loading schede:', error);
+                    this.showError('Errore nel caricamento delle schede');
+                } finally {
+                    this.showLoading(false);
+                }
+            },
+            
+            renderSchede(schede) {
+                const grid = document.getElementById('schedeGrid');
+                const emptyState = document.getElementById('emptyState');
+                
+                if (schede.length === 0) {
+                    grid.style.display = 'none';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                grid.style.display = 'grid';
+                
+                grid.innerHTML = schede.map(scheda => `
+                    <div class="scheda-card">
+                        <div class="scheda-header">
+                            <div>
+                                <div class="scheda-title">${scheda.name}</div>
+                                <div class="scheda-description">${scheda.description || 'Nessuna descrizione'}</div>
+                            </div>
+                            <div class="scheda-actions">
+                                <button class="action-btn" onclick="Schede.editScheda(${scheda.id})" title="Modifica">
+                                    ✏️
+                                </button>
+                                <button class="action-btn danger" onclick="Schede.deleteScheda(${scheda.id})" title="Elimina">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        <div class="scheda-exercises">
+                            <div class="exercise-count">${scheda.exercises?.length || 0} esercizi</div>
+                            <div class="exercise-list">
+                                ${scheda.exercises?.slice(0, 3).map(ex => `
+                                    <span class="exercise-tag">${ex}</span>
+                                `).join('') || ''}
+                                ${scheda.exercises?.length > 3 ? `<span class="exercise-tag">+${scheda.exercises.length - 3} altri</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+            
+            showCreateModal() {
+                this.currentScheda = null;
+                document.getElementById('modalTitle').textContent = 'Crea Nuova Scheda';
+                document.getElementById('schedaName').value = '';
+                document.getElementById('schedaDescription').value = '';
+                document.getElementById('saveButton').textContent = 'Salva Scheda';
+                document.getElementById('schedaModal').classList.add('show');
+            },
+            
+            editScheda(id) {
+                // TODO: Implement edit functionality
+                console.log('Edit scheda:', id);
+                alert('Funzione modifica in sviluppo!');
+            },
+            
+            deleteScheda(id) {
+                if (confirm('Sei sicuro di voler eliminare questa scheda?')) {
+                    // TODO: Implement delete functionality
+                    console.log('Delete scheda:', id);
+                    alert('Funzione eliminazione in sviluppo!');
+                }
+            },
+            
+            closeModal() {
+                document.getElementById('schedaModal').classList.remove('show');
+                this.currentScheda = null;
+            },
+            
+            async saveScheda() {
+                const name = document.getElementById('schedaName').value.trim();
+                const description = document.getElementById('schedaDescription').value.trim();
+                
+                if (!name) {
+                    alert('Il nome della scheda è obbligatorio');
+                    return;
+                }
+                
+                const button = document.getElementById('saveButton');
+                const originalText = button.textContent;
+                button.textContent = 'Salvando...';
+                button.disabled = true;
+                
+                try {
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    console.log('Saving scheda:', { name, description });
+                    
+                    this.closeModal();
+                    this.showSuccess('Scheda salvata con successo!');
+                    this.loadSchede(); // Reload list
+                    
+                } catch (error) {
+                    console.error('Error saving scheda:', error);
+                    this.showError('Errore nel salvare la scheda');
+                } finally {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }
+            },
+            
+            showLoading(show) {
+                document.getElementById('loadingState').style.display = show ? 'flex' : 'none';
+                if (!show) {
+                    // Hide loading, decide what to show
+                    const grid = document.getElementById('schedeGrid');
+                    const emptyState = document.getElementById('emptyState');
+                    if (grid.innerHTML.trim() === '') {
+                        emptyState.style.display = 'block';
+                    }
+                }
+            },
+            
+            showSuccess(message) {
+                // Simple toast notification
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed; top: 20px; right: 20px; background: #10b981; color: white;
+                    padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 3000; animation: slideIn 0.3s ease;
+                `;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            },
+            
+            showError(message) {
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed; top: 20px; right: 20px; background: #ef4444; color: white;
+                    padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 3000; animation: slideIn 0.3s ease;
+                `;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+        };
+        
+        // Page initialization
+        window.PageInit = function() {
+            // Check auth first
+            if (!Auth.isAuthenticated()) {
+                window.location.href = 'home.html';
+                return;
+            }
+            
+            // Initialize Schede page
+            Schede.init();
+        };
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymTracker - Le Mie Schede</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/menu-component.css">
+    <link rel="stylesheet" href="css/shared.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            line-height: 1.6;
+            color: #1f2937;
+            background: #f9fafb;
+        }
+        
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: #1f2937;
+            margin: 0;
+        }
+        
+        .primary-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .primary-button:hover {
+            background: #2563eb;
+        }
+        
+        /* Schede Grid */
+        .schede-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .scheda-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+        
+        .scheda-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .scheda-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .scheda-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .scheda-description {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .scheda-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            background: none;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .action-btn.danger:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        
+        .scheda-exercises {
+            margin-top: 1rem;
+        }
+        
+        .exercise-count {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .exercise-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .exercise-tag {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #374151;
+        }
+        
+        .empty-state p {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Loading State */
+        .loading-state {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #1f2937;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0.25rem;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .secondary-button {
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .secondary-button:hover {
+            background: #f9fafb;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content { padding: 1rem; }
+            .page-header { flex-direction: column; align-items: stretch; }
+            .page-header h1 { font-size: 2rem; }
+            .schede-grid { grid-template-columns: 1fr; }
+            .scheda-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Container (Template System) -->
+    <div id="headerContainer"></div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>💪 Le Mie Schede di Allenamento</h1>
+            <button class="primary-button" onclick="Schede.showCreateModal()">
+                ➕ Nuova Scheda
+            </button>
+        </div>
+        
+        <!-- Schede List -->
+        <div class="schede-container">
+            <!-- Loading State -->
+            <div id="loadingState" class="loading-state">
+                <div class="spinner"></div>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-icon">📋</div>
+                <h3>Nessuna scheda ancora</h3>
+                <p>Crea la tua prima scheda di allenamento personalizzata! Aggiungi esercizi, serie e ripetizioni per iniziare il tuo percorso fitness.</p>
+                <button class="primary-button" onclick="Schede.showCreateModal()">
+                    🚀 Crea Prima Scheda
+                </button>
+            </div>
+            
+            <!-- Schede Grid -->
+            <div id="schedeGrid" class="schede-grid" style="display: none;">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Create/Edit Scheda Modal -->
+    <div id="schedaModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Crea Nuova Scheda</h3>
+                <button class="modal-close" onclick="Schede.closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="schedaForm">
+                    <div class="form-group">
+                        <label>Nome Scheda</label>
+                        <input type="text" id="schedaName" required placeholder="es. Push Pull Legs">
+                    </div>
+                    <div class="form-group">
+                        <label>Descrizione</label>
+                        <textarea id="schedaDescription" placeholder="Descrivi questa scheda di allenamento..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button class="secondary-button" onclick="Schede.closeModal()">Annulla</button>
+                <button class="primary-button" onclick="Schede.saveScheda()" id="saveButton">Salva Scheda</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Container (Template System) -->
+    <div id="footerContainer"></div>
+
+    <!-- JavaScript -->
+    <script src="js/core/template-loader.js"></script>
+    <script src="js/core/menu-component.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <!-- Page-specific Scripts -->
+    <script>
+        // Schede Page Logic (temporary, will move to separate file)
+        const Schede = {
+            currentScheda: null,
+            isLoading: false,
+            
+            init() {
+                console.log('🏃‍♂️ Initializing Schede page...');
+                this.loadSchede();
+                this.bindEvents();
+            },
+            
+            bindEvents() {
+                // Close modal on outside click
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('modal-overlay')) {
+                        this.closeModal();
+                    }
+                });
+                
+                // Close modal on ESC key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.closeModal();
+                    }
+                });
+            },
+            
+            async loadSchede() {
+                this.showLoading(true);
+                
+                try {
+                    // Simulate API call for now
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Mock data for testing
+                    const mockSchede = [
+                        {
+                            id: 1,
+                            name: "Push Pull Legs",
+                            description: "Scheda per sviluppo muscolare completo",
+                            exercises: ["Panca piana", "Shoulder press", "Dips", "Lat machine"],
+                            created_at: "2025-01-20"
+                        },
+                        {
+                            id: 2,
+                            name: "Full Body Beginner",
+                            description: "Allenamento completo per principianti",
+                            exercises: ["Squat", "Push up", "Plank", "Mountain climbers"],
+                            created_at: "2025-01-18"
+                        }
+                    ];
+                    
+                    this.renderSchede(mockSchede);
+                } catch (error) {
+                    console.error('Error loading schede:', error);
+                    this.showError('Errore nel caricamento delle schede');
+                } finally {
+                    this.showLoading(false);
+                }
+            },
+            
+            renderSchede(schede) {
+                const grid = document.getElementById('schedeGrid');
+                const emptyState = document.getElementById('emptyState');
+                
+                if (schede.length === 0) {
+                    grid.style.display = 'none';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                grid.style.display = 'grid';
+                
+                grid.innerHTML = schede.map(scheda => `
+                    <div class="scheda-card">
+                        <div class="scheda-header">
+                            <div>
+                                <div class="scheda-title">${scheda.name}</div>
+                                <div class="scheda-description">${scheda.description || 'Nessuna descrizione'}</div>
+                            </div>
+                            <div class="scheda-actions">
+                                <button class="action-btn" onclick="Schede.editScheda(${scheda.id})" title="Modifica">
+                                    ✏️
+                                </button>
+                                <button class="action-btn danger" onclick="Schede.deleteScheda(${scheda.id})" title="Elimina">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        <div class="scheda-exercises">
+                            <div class="exercise-count">${scheda.exercises?.length || 0} esercizi</div>
+                            <div class="exercise-list">
+                                ${scheda.exercises?.slice(0, 3).map(ex => `
+                                    <span class="exercise-tag">${ex}</span>
+                                `).join('') || ''}
+                                ${scheda.exercises?.length > 3 ? `<span class="exercise-tag">+${scheda.exercises.length - 3} altri</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+            
+            showCreateModal() {
+                this.currentScheda = null;
+                document.getElementById('modalTitle').textContent = 'Crea Nuova Scheda';
+                document.getElementById('schedaName').value = '';
+                document.getElementById('schedaDescription').value = '';
+                document.getElementById('saveButton').textContent = 'Salva Scheda';
+                document.getElementById('schedaModal').classList.add('show');
+            },
+            
+            editScheda(id) {
+                // TODO: Implement edit functionality
+                console.log('Edit scheda:', id);
+                alert('Funzione modifica in sviluppo!');
+            },
+            
+            deleteScheda(id) {
+                if (confirm('Sei sicuro di voler eliminare questa scheda?')) {
+                    // TODO: Implement delete functionality
+                    console.log('Delete scheda:', id);
+                    alert('Funzione eliminazione in sviluppo!');
+                }
+            },
+            
+            closeModal() {
+                document.getElementById('schedaModal').classList.remove('show');
+                this.currentScheda = null;
+            },
+            
+            async saveScheda() {
+                const name = document.getElementById('schedaName').value.trim();
+                const description = document.getElementById('schedaDescription').value.trim();
+                
+                if (!name) {
+                    alert('Il nome della scheda è obbligatorio');
+                    return;
+                }
+                
+                const button = document.getElementById('saveButton');
+                const originalText = button.textContent;
+                button.textContent = 'Salvando...';
+                button.disabled = true;
+                
+                try {
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    console.log('Saving scheda:', { name, description });
+                    
+                    this.closeModal();
+                    this.showSuccess('Scheda salvata con successo!');
+                    this.loadSchede(); // Reload list
+                    
+                } catch (error) {
+                    console.error('Error saving scheda:', error);
+                    this.showError('Errore nel salvare la scheda');
+                } finally {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }
+            },
+            
+            showLoading(show) {
+                document.getElementById('loadingState').style.display = show ? 'flex' : 'none';
+                if (!show) {
+                    // Hide loading, decide what to show
+                    const grid = document.getElementById('schedeGrid');
+                    const emptyState = document.getElementById('emptyState');
+                    if (grid.innerHTML.trim() === '') {
+                        emptyState.style.display = 'block';
+                    }
+                }
+            },
+            
+            showSuccess(message) {
+                // Simple toast notification
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed; top: 20px; right: 20px; background: #10b981; color: white;
+                    padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 3000; animation: slideIn 0.3s ease;
+                `;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            },
+            
+            showError(message) {
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed; top: 20px; right: 20px; background: #ef4444; color: white;
+                    padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 3000; animation: slideIn 0.3s ease;
+                `;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+        };
+        
+        // Page initialization
+        window.PageInit = function() {
+            // Check auth first
+            if (!Auth.isAuthenticated()) {
+                window.location.href = 'home.html';
+                return;
+            }
+            
+            // Initialize Schede page
+            Schede.init();
+        };
+    </script>
+</body>
+</html>

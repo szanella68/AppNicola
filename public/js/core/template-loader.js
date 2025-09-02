@@ -1,182 +1,207 @@
-/* template-loader.js - Professional Template System */
+/* js/core/template-loader.js - Professional Template System */
 
 const TemplateLoader = {
-  loadedComponents: new Map(),
-  pageType: 'public',
+  loadedTemplates: new Map(),
+  isInitialized: false,
   
   // Initialize template system
-  async init(pageType = 'public') {
-    this.pageType = pageType;
+  async init() {
+    if (this.isInitialized) return;
     
     try {
-      // Load components in parallel
-      await Promise.all([
-        this.loadHeader(),
-        this.loadFooter()
-      ]);
-      
-      // Initialize core systems after components loaded
-      this.initializeSystems();
-      
+      await this.loadAllTemplates();
+      this.isInitialized = true;
       console.log('✅ Template system initialized successfully');
     } catch (error) {
       console.error('❌ Template system initialization failed:', error);
-      this.handleLoadError();
+      throw error;
     }
   },
   
-  // Load header component
-  async loadHeader() {
-    const headerHTML = await this.loadComponent('header');
-    const headerContainer = document.getElementById('headerComponent');
+  // Load all required templates
+  async loadAllTemplates() {
+    const templates = [
+      { name: 'header', path: 'components/header.html', container: '#headerContainer' },
+      { name: 'footer', path: 'components/footer.html', container: '#footerContainer' }
+    ];
     
-    if (headerContainer && headerHTML) {
-      // Replace template variables
-      const processedHTML = headerHTML.replace('{{PAGE_TYPE}}', this.pageType);
-      headerContainer.innerHTML = processedHTML;
-    }
+    // Load templates in parallel for better performance
+    const loadPromises = templates.map(template => this.loadTemplate(template));
+    await Promise.all(loadPromises);
   },
   
-  // Load footer component
-  async loadFooter() {
-    const footerHTML = await this.loadComponent('footer');
-    const footerContainer = document.getElementById('footerComponent');
-    
-    if (footerContainer && footerHTML) {
-      footerContainer.innerHTML = footerHTML;
-    }
-  },
-  
-  // Load component with caching
-  async loadComponent(componentName) {
-    // Check cache first
-    if (this.loadedComponents.has(componentName)) {
-      return this.loadedComponents.get(componentName);
-    }
-    
+  // Load single template
+  async loadTemplate({ name, path, container }) {
     try {
-      const response = await fetch(`components/${componentName}.html`);
+      console.log(`🔄 Loading template: ${name}`);
       
+      const response = await fetch(path);
       if (!response.ok) {
-        throw new Error(`Failed to load ${componentName}: ${response.status}`);
+        throw new Error(`Failed to load ${name}: ${response.status} ${response.statusText}`);
       }
       
       const html = await response.text();
+      this.loadedTemplates.set(name, html);
       
-      // Cache the component
-      this.loadedComponents.set(componentName, html);
+      // Insert into container if it exists
+      const containerEl = document.querySelector(container);
+      if (containerEl) {
+        containerEl.innerHTML = html;
+        console.log(`✅ Template ${name} loaded and inserted`);
+      } else {
+        console.warn(`⚠️ Container ${container} not found for template ${name}`);
+      }
       
       return html;
     } catch (error) {
-      console.error(`Error loading component ${componentName}:`, error);
-      return this.getFallbackComponent(componentName);
-    }
-  },
-  
-  // Initialize core systems after components are loaded
-  initializeSystems() {
-    // Initialize systems in order
-    if (window.Menu && typeof Menu.init === 'function') {
-      Menu.init();
-    }
-    
-    if (window.Auth && typeof Auth.init === 'function') {
-      Auth.init();
-    }
-    
-    // Initialize page-specific systems
-    this.initializePageSystems();
-  },
-  
-  // Initialize page-specific systems
-  initializePageSystems() {
-    // Check for page-specific initialization
-    if (window.PageApp && typeof PageApp.init === 'function') {
-      PageApp.init();
-    }
-    
-    // Auto-detect and initialize based on page
-    const pageName = this.detectPageName();
-    const pageInitializer = window[`${pageName}Page`];
-    
-    if (pageInitializer && typeof pageInitializer.init === 'function') {
-      pageInitializer.init();
-    }
-  },
-  
-  // Detect current page name
-  detectPageName() {
-    const path = window.location.pathname;
-    const filename = path.split('/').pop().replace('.html', '');
-    
-    // Convert to camelCase
-    return filename.charAt(0).toUpperCase() + filename.slice(1);
-  },
-  
-  // Get fallback component if loading fails
-  getFallbackComponent(componentName) {
-    const fallbacks = {
-      header: `
-        <header class="app-header fallback">
-          <div class="header-content">
-            <div class="brand">
-              <a href="home.html" class="brand-link">🏋️ GymTracker</a>
-            </div>
-            <div class="fallback-notice">
-              <span>Menu temporaneamente non disponibile</span>
-            </div>
+      console.error(`❌ Failed to load template ${name}:`, error);
+      // Fallback: show error message in container
+      const containerEl = document.querySelector(container);
+      if (containerEl) {
+        containerEl.innerHTML = `
+          <div style="padding: 1rem; background: #fee2e2; color: #dc2626; border-radius: 8px;">
+            ⚠️ Error loading ${name} template. Please refresh the page.
           </div>
-        </header>
-      `,
-      footer: `
-        <footer class="app-footer fallback">
-          <div class="footer-content">
-            <p>&copy; 2025 GymTracker. Sistema in caricamento...</p>
-          </div>
-        </footer>
-      `
-    };
-    
-    return fallbacks[componentName] || '';
+        `;
+      }
+      throw error;
+    }
   },
   
-  // Handle load error
-  handleLoadError() {
-    console.warn('Using fallback template system');
-    
-    // Show user-friendly error
-    const errorNotice = document.createElement('div');
-    errorNotice.className = 'system-notice';
-    errorNotice.innerHTML = `
-      <div class="notice-content">
-        ⚠️ Alcuni componenti sono in caricamento. L'applicazione potrebbe non funzionare completamente.
-        <button onclick="location.reload()">Ricarica Pagina</button>
-      </div>
+  // Get loaded template by name
+  getTemplate(name) {
+    return this.loadedTemplates.get(name);
+  },
+  
+  // Initialize page after templates loaded
+  async initializePage() {
+    try {
+      // Wait for templates to load
+      await this.init();
+      
+      // Initialize core systems after templates are loaded
+      if (window.Menu && typeof Menu.init === 'function') {
+        Menu.init();
+        console.log('✅ Menu system initialized');
+      }
+      
+      if (window.Auth && typeof Auth.init === 'function') {
+        Auth.init();
+        console.log('✅ Auth system initialized');
+      }
+      
+      // Trigger custom page initialization if exists
+      if (window.PageInit && typeof PageInit === 'function') {
+        PageInit();
+        console.log('✅ Page-specific initialization completed');
+      }
+      
+      console.log('🚀 Page fully initialized');
+      
+    } catch (error) {
+      console.error('❌ Page initialization failed:', error);
+      this.showInitializationError(error);
+    }
+  },
+  
+  // Show initialization error to user
+  showInitializationError(error) {
+    const errorContainer = document.createElement('div');
+    errorContainer.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 9999;
+      max-width: 300px;
     `;
+    errorContainer.innerHTML = `
+      <strong>⚠️ Initialization Error</strong><br>
+      <small>Please refresh the page. If the problem persists, check your connection.</small>
+      <button onclick="this.parentElement.remove()" style="float: right; background: none; border: none; color: #dc2626; cursor: pointer; font-size: 18px;">&times;</button>
+    `;
+    document.body.appendChild(errorContainer);
     
-    document.body.insertBefore(errorNotice, document.body.firstChild);
+    // Auto remove after 10 seconds
+    setTimeout(() => {
+      if (errorContainer.parentElement) {
+        errorContainer.remove();
+      }
+    }, 10000);
   },
   
-  // Reload component (for debugging)
-  async reloadComponent(componentName) {
-    this.loadedComponents.delete(componentName);
+  // Utility: Create template containers in page
+  createTemplateContainers() {
+    const containers = [
+      { id: 'headerContainer', insertBefore: 'main' },
+      { id: 'footerContainer', insertAfter: 'main' }
+    ];
     
-    if (componentName === 'header') {
-      await this.loadHeader();
-    } else if (componentName === 'footer') {
-      await this.loadFooter();
-    }
+    containers.forEach(({ id, insertBefore, insertAfter }) => {
+      if (document.getElementById(id)) return; // Already exists
+      
+      const container = document.createElement('div');
+      container.id = id;
+      
+      if (insertBefore) {
+        const target = document.querySelector(insertBefore);
+        if (target) {
+          target.parentNode.insertBefore(container, target);
+        } else {
+          document.body.insertAdjacentElement('afterbegin', container);
+        }
+      } else if (insertAfter) {
+        const target = document.querySelector(insertAfter);
+        if (target) {
+          target.parentNode.insertBefore(container, target.nextSibling);
+        } else {
+          document.body.appendChild(container);
+        }
+      }
+    });
   },
   
-  // Get component status
-  getStatus() {
-    return {
-      pageType: this.pageType,
-      loadedComponents: Array.from(this.loadedComponents.keys()),
-      cacheSize: this.loadedComponents.size
+  // Utility: Reload single template
+  async reloadTemplate(name) {
+    const templateConfig = {
+      'header': { name: 'header', path: 'components/header.html', container: '#headerContainer' },
+      'footer': { name: 'footer', path: 'components/footer.html', container: '#footerContainer' }
     };
+    
+    const config = templateConfig[name];
+    if (!config) {
+      console.error(`❌ Template ${name} not found in configuration`);
+      return;
+    }
+    
+    await this.loadTemplate(config);
+    
+    // Re-initialize systems if needed
+    if (name === 'header') {
+      if (window.Menu && typeof Menu.init === 'function') {
+        Menu.init();
+      }
+      if (window.Auth && typeof Auth.checkAuthState === 'function') {
+        Auth.checkAuthState();
+      }
+    }
   }
 };
 
-// Expose globally for debugging
+// Auto-initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  // Create template containers automatically
+  TemplateLoader.createTemplateContainers();
+  
+  // Initialize templates and page
+  TemplateLoader.initializePage().catch(error => {
+    console.error('❌ Failed to initialize page:', error);
+  });
+});
+
+// Export for global access
 window.TemplateLoader = TemplateLoader;
