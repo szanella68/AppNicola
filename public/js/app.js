@@ -1,3 +1,5 @@
+// Scope wrapper to avoid global collisions (Auth, Utils, ...)
+(function() {
 // =====================
 // Configurazione Dinamica
 // =====================
@@ -704,6 +706,11 @@ function setupEventListeners() {
 // =====================
 document.addEventListener('DOMContentLoaded', async function () {
   console.log('🚀 GymTracker DOM loaded!');
+  // If the new core Auth is present, let it drive the page. Skip legacy bootstrap.
+  if (window.Auth && typeof window.Auth.isAuthenticated === 'function') {
+    console.log('[app.js] Skipping legacy bootstrap (core Auth in use)');
+    return;
+  }
   try {
     // Carica configurazione dal server
     const config = await ConfigLoader.loadConfig();
@@ -752,3 +759,5 @@ window.addEventListener('unhandledrejection', (event) => {
   console.error('💥 Promise rejection non gestita:', event.reason);
   if (Utils?.showAlert) Utils.showAlert('Errore di connessione. Controlla la rete e riprova.', 'error');
 });
+
+})();

@@ -200,7 +200,20 @@ const Menu = {
   }
 };
 
-// Initialize when DOM is ready
+// Expose globally so other modules (Auth, TemplateLoader) can access it
+try {
+  window.Menu = Menu;
+  console.log('🌐 Menu exposed on window');
+} catch (e) {
+  // no-op in non-browser environments
+}
+
+// Initialize when DOM is ready - BUT only if template system hasn't initialized us already
 document.addEventListener('DOMContentLoaded', () => {
-  Menu.init();
+  // Check if we're using template system
+  if (!window.TemplateLoader) {
+    // No template system, initialize immediately
+    Menu.init();
+  }
+  // If template system exists, it will initialize us after templates load
 });

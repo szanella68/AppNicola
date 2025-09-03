@@ -84,11 +84,11 @@ class Schede {
             Utils.showLoading(Utils.$('#workoutsContainer'), 'Caricamento schede...');
             
             // Check if API is available
-            if (!window.API || typeof window.window.API.getWorkouts !== 'function') {
+            if (!window.API || typeof window.API.getWorkouts !== 'function') {
                 throw new Error('API not initialized or getWorkouts method not available');
             }
             
-            this.workouts = await window.window.API.getWorkouts();
+            this.workouts = await window.API.getWorkouts();
             this.renderWorkouts();
             
             Utils.hideLoading(Utils.$('#workoutsContainer'));

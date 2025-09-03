@@ -19,7 +19,7 @@
 </head>
 <body class="content-page">
     <!-- Header Component -->
-    <div id="headerComponent"></div>
+    <div id="headerContainer"></div>
     
     <!-- Main Content -->
     <main id="mainContent" class="main-content">
@@ -332,19 +332,13 @@
     </main>
     
     <!-- Footer Component -->
-    <div id="footerComponent"></div>
+    <div id="footerContainer"></div>
     
     <!-- Shared JavaScript -->
-    <script src="js/core/utils.js"></script>
     <script src="js/core/template-loader.js"></script>
-    <script src="js/core/menu.js"></script>
+    <script src="js/core/menu-component.js"></script>
     <script src="js/core/auth.js"></script>
-    
-    <!-- Initialize -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            TemplateLoader.init('privacy');
-        });
-    </script>
+    <script src="js/core/utils.js"></script>
+    <!-- TemplateLoader auto-initializes Menu → Auth → PageInit -->
 </body>
 </html>

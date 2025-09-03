@@ -42,5 +42,5 @@ netstat -ano | findstr /r /c:":%PORT% .*LISTENING" >nul && (
 
 echo.
 echo ==== STOP COMPLETATO (finestra bloccata) ====
-pause >nul
+rem pause >nul
 endlocal

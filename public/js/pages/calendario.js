@@ -77,7 +77,7 @@ class Calendario {
     // ===== DATA LOADING =====
     async loadWorkouts() {
         try {
-            this.workouts = await API.getWorkouts();
+            this.workouts = await window.API.getWorkouts();
         } catch (error) {
             console.error('Load workouts failed:', error);
             this.workouts = [];

@@ -79,14 +79,13 @@ const TemplateLoader = {
       // Wait for templates to load
       await this.init();
       
-      // Initialize core systems after templates are loaded
+      // Initialize core systems in correct order: Menu FIRST, then Auth
       if (window.Menu && typeof Menu.init === 'function') {
         Menu.init();
-        // Force refresh auth state to ensure proper menu display
-        if (typeof Menu.refreshAuthState === 'function') {
-          Menu.refreshAuthState();
-        }
         console.log('✅ Menu system initialized');
+        
+        // Small delay to ensure Menu is fully ready
+        await new Promise(resolve => setTimeout(resolve, 50));
       }
       
       if (window.Auth && typeof Auth.init === 'function') {

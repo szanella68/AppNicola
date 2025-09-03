@@ -1,0 +1,160 @@
+HSS
+
+# File: httpd-ssl.conf
+<VirtualHost *:443>
+  ServerName zanserver.sytes.net
+  DocumentRoot "C:/xampp/htdocs"
+
+  SSLEngine on
+  # Se Apache >= 2.4.8: usa il fullchain
+  # SSLCertificateFile "C:/ProgramData/win-acme/.../zanserver.sytes.net-fullchain.pem"
+  # SSLCertificateKeyFile "C:/ProgramData/win-acme/.../zanserver.sytes.net-key.pem"
+  # Altrimenti mantieni i tre file separati:
+  SSLCertificateFile      "C:/ProgramData/win-acme/acme-v02.api.letsencrypt.org/zanserver.sytes.net-crt.pem"
+  SSLCertificateKeyFile   "C:/ProgramData/win-acme/acme-v02.api.letsencrypt.org/zanserver.sytes.net-key.pem"
+  SSLCertificateChainFile "C:/ProgramData/win-acme/acme-v02.api.letsencrypt.org/zanserver.sytes.net-chain.pem"
+
+  ProxyPreserveHost On
+  ProxyRequests Off
+
+  # Forwarded headers per app dietro reverse proxy
+  RequestHeader set X-Forwarded-Proto "https"
+  RequestHeader set X-Forwarded-Port  "443"
+
+  <Proxy *>
+    Require all granted
+  </Proxy>
+
+  <Location />
+    Require all granted
+  </Location>
+
+  # --- ORDINE: specifico prima del generico ---
+  ProxyPass        /api/zanflow/ http://localhost:3002/api/zanflow/
+  ProxyPassReverse /api/zanflow/ http://localhost:3002/api/zanflow/
+
+  # --- App NICOLA (porta 3007) - API dedicate ---
+  ProxyPass        /api/nicola/    http://localhost:3007/api/
+  ProxyPassReverse /api/nicola/    http://localhost:3007/api/
+  # (opzionale: per fetch relativi dentro /nicola/)
+  ProxyPass        /nicola/api/    http://localhost:3007/api/
+  ProxyPassReverse /nicola/api/    http://localhost:3007/api/
+
+  # Backend principale ZanMan
+  ProxyPass        /api/         http://localhost:3000/api/
+  ProxyPassReverse /api/         http://localhost:3000/api/
+
+  # UI ZanMan
+  ProxyPass        /app1/        http://localhost:3000/
+  ProxyPassReverse /app1/        http://localhost:3000/
+
+  # UI Nicola
+  ProxyPass        /nicola/        http://localhost:3007/
+  ProxyPassReverse /nicola/        http://localhost:3007/
+
+  # Callback OAuth Google (production)
+  ProxyPass        /oauth2callback http://localhost:3000/oauth2callback
+  ProxyPassReverse /oauth2callback http://localhost:3000/oauth2callback
+
+  # Root -> /app1/
+  RedirectMatch ^/$ /app1/
+
+  # (Facoltativo) WebSocket se/quando servirà
+  # LoadModule proxy_wstunnel_module modules/mod_proxy_wstunnel.so
+  # ProxyPass        /socket.io/ ws://localhost:3000/socket.io/
+  # ProxyPassReverse /socket.io/ ws://localhost:3000/socket.io/
+
+  # Hardening minimo
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "no-referrer-when-downgrade"
+
+  ErrorLog  "logs/zanserver-ssl-error.log"
+  CustomLog "logs/zanserver-ssl-access.log" combined
+  CustomLog "logs/ssl_request.log" "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+</VirtualHost>
+
+
+
+
+
+
+
+FILE CONFIG 
+
+
+# File: httpd-ssl.conf
+<VirtualHost *:443>
+  ServerName zanserver.sytes.net
+  DocumentRoot "C:/xampp/htdocs"
+
+  SSLEngine on
+  # Se Apache >= 2.4.8: usa il fullchain
+  # SSLCertificateFile "C:/ProgramData/win-acme/.../zanserver.sytes.net-fullchain.pem"
+  # SSLCertificateKeyFile "C:/ProgramData/win-acme/.../zanserver.sytes.net-key.pem"
+  # Altrimenti mantieni i tre file separati:
+  SSLCertificateFile      "C:/ProgramData/win-acme/acme-v02.api.letsencrypt.org/zanserver.sytes.net-crt.pem"
+  SSLCertificateKeyFile   "C:/ProgramData/win-acme/acme-v02.api.letsencrypt.org/zanserver.sytes.net-key.pem"
+  SSLCertificateChainFile "C:/ProgramData/win-acme/acme-v02.api.letsencrypt.org/zanserver.sytes.net-chain.pem"
+
+  ProxyPreserveHost On
+  ProxyRequests Off
+
+  # Forwarded headers per app dietro reverse proxy
+  RequestHeader set X-Forwarded-Proto "https"
+  RequestHeader set X-Forwarded-Port  "443"
+
+  <Proxy *>
+    Require all granted
+  </Proxy>
+
+  <Location />
+    Require all granted
+  </Location>
+
+  # --- ORDINE: specifico prima del generico ---
+  ProxyPass        /api/zanflow/ http://localhost:3002/api/zanflow/
+  ProxyPassReverse /api/zanflow/ http://localhost:3002/api/zanflow/
+
+  # --- App NICOLA (porta 3007) - API dedicate ---
+  ProxyPass        /api/nicola/    http://localhost:3007/api/
+  ProxyPassReverse /api/nicola/    http://localhost:3007/api/
+  # (opzionale: per fetch relativi dentro /nicola/)
+  ProxyPass        /nicola/api/    http://localhost:3007/api/
+  ProxyPassReverse /nicola/api/    http://localhost:3007/api/
+
+  # Backend principale ZanMan
+  ProxyPass        /api/         http://localhost:3000/api/
+  ProxyPassReverse /api/         http://localhost:3000/api/
+
+  # UI ZanMan
+  ProxyPass        /app1/        http://localhost:3000/
+  ProxyPassReverse /app1/        http://localhost:3000/
+
+  # UI Nicola
+  ProxyPass        /nicola/        http://localhost:3007/
+  ProxyPassReverse /nicola/        http://localhost:3007/
+
+  # Callback OAuth Google (production)
+  ProxyPass        /oauth2callback http://localhost:3000/oauth2callback
+  ProxyPassReverse /oauth2callback http://localhost:3000/oauth2callback
+
+  # Root -> /app1/
+  RedirectMatch ^/$ /app1/
+
+  # (Facoltativo) WebSocket se/quando servirà
+  # LoadModule proxy_wstunnel_module modules/mod_proxy_wstunnel.so
+  # ProxyPass        /socket.io/ ws://localhost:3000/socket.io/
+  # ProxyPassReverse /socket.io/ ws://localhost:3000/socket.io/
+
+  # Hardening minimo
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "no-referrer-when-downgrade"
+
+  ErrorLog  "logs/zanserver-ssl-error.log"
+  CustomLog "logs/zanserver-ssl-access.log" combined
+  CustomLog "logs/ssl_request.log" "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+</VirtualHost>

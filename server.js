@@ -47,6 +47,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Servire file statici anche sotto /nicola/ per compatibilità con base href
 app.use('/nicola', express.static(path.join(__dirname, 'public')));
 
+// Favicon handler (evita 404 in assenza di file)
+app.get('/favicon.ico', (req, res) => {
+  const svgPath = path.join(__dirname, 'public', 'favicon.svg');
+  res.sendFile(svgPath, (err) => {
+    if (err) {
+      res.status(204).end();
+    }
+  });
+});
+
 // API Routes
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');

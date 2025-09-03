@@ -257,31 +257,26 @@ const Auth = {
     const password = document.getElementById('loginPassword').value;
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // For now, accept any email/password
-      if (email && password) {
-        const user = {
-          email: email,
-          name: email.split('@')[0],
-          id: Date.now()
-        };
-        
-        this.setUser(user);
+      if (!window.API || typeof window.API.login !== 'function') {
+        throw new Error('API non disponibile');
+      }
+      const result = await window.API.login(email, password);
+      if (result?.session && result?.user) {
+        this.setUser({
+          email: result.user.email,
+          name: result.user.fullName || (result.user.email?.split('@')[0]) || 'Utente',
+          id: result.user.id
+        });
         this.closeModals();
-        
-        // REDIRECT TO APP.HTML
         if (window.location.pathname.includes('home.html')) {
           window.location.href = 'app.html';
         }
-        
-        this.showSuccessMessage('Accesso effettuato con successo!');
       } else {
-        throw new Error('Credenziali non valide');
+        throw new Error('Login fallito');
       }
     } catch (error) {
-      this.showErrorMessage(error.message);
+      console.error('[Auth] Login error:', error);
+      this.showErrorMessage(error.message || 'Errore di login');
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Accedi';
@@ -301,26 +296,29 @@ const Auth = {
     const password = document.getElementById('registerPassword').value;
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const user = {
-        email: email,
-        name: name,
-        id: Date.now()
-      };
-      
-      this.setUser(user);
-      this.closeModals();
-      
-      // REDIRECT TO APP.HTML
-      if (window.location.pathname.includes('home.html')) {
-        window.location.href = 'app.html';
+      if (!window.API || typeof window.API.register !== 'function') {
+        throw new Error('API non disponibile');
       }
-      
-      this.showSuccessMessage('Registrazione completata con successo!');
+      const result = await window.API.register(email, password, { fullName: name });
+      if (result?.session && result?.user) {
+        this.setUser({
+          email: result.user.email,
+          name: name || (result.user.email?.split('@')[0]) || 'Utente',
+          id: result.user.id
+        });
+        this.closeModals();
+        if (window.location.pathname.includes('home.html')) {
+          window.location.href = 'app.html';
+        }
+        this.showSuccessMessage('Registrazione completata con successo!');
+      } else if (result?.needsConfirmation) {
+        this.showSuccessMessage('Controlla la tua email per confermare l\'account');
+      } else {
+        throw new Error('Registrazione fallita');
+      }
     } catch (error) {
-      this.showErrorMessage(error.message);
+      console.error('[Auth] Register error:', error);
+      this.showErrorMessage(error.message || 'Errore di registrazione');
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Registrati';
@@ -332,9 +330,34 @@ const Auth = {
     this.currentUser = user;
     localStorage.setItem('gymtracker_user', JSON.stringify(user));
     
-    // Update menu
-    if (window.Menu) {
+    // Update menu - try multiple times if Menu is not ready
+    this.updateMenuAfterAuth(user);
+  },
+  
+  // Update menu after authentication with retry logic
+  updateMenuAfterAuth(user, retries = 5) {
+    // Debug logs to diagnose Menu/Auth availability and DOM state
+    try {
+      console.log('[Auth.updateMenuAfterAuth] retries left:', retries);
+      console.log('[Auth.updateMenuAfterAuth] window.Menu:', typeof window.Menu, 'Menu:', typeof Menu);
+      console.log('[Auth.updateMenuAfterAuth] window.Auth:', typeof window.Auth, 'Auth:', typeof Auth);
+      const hasPublic = !!document.getElementById('menuPublic');
+      const hasPrivate = !!document.getElementById('menuPrivate');
+      console.log('[Auth.updateMenuAfterAuth] menu DOM exists? {menuPublic, menuPrivate}:', hasPublic, hasPrivate);
+    } catch (e) {
+      console.warn('[Auth.updateMenuAfterAuth] log error:', e);
+    }
+
+    if (window.Menu && typeof Menu.showPrivateMenu === 'function') {
       Menu.showPrivateMenu(user);
+      console.log('✅ Private menu activated for:', user.name);
+    } else if (retries > 0) {
+      // Retry after a short delay
+      setTimeout(() => {
+        this.updateMenuAfterAuth(user, retries - 1);
+      }, 100);
+    } else {
+      console.warn('❌ Could not activate private menu - Menu not available');
     }
   },
   
@@ -342,6 +365,7 @@ const Auth = {
   logout() {
     this.currentUser = null;
     localStorage.removeItem('gymtracker_user');
+    this.clearSession();
     
     // Update menu
     if (window.Menu) {
@@ -349,6 +373,11 @@ const Auth = {
     }
     
     // Redirect to home
+    try {
+      if (window.API && typeof window.API.logout === 'function') {
+        window.API.logout().catch(() => {});
+      }
+    } catch (_) {}
     window.location.href = 'home.html';
   },
   
@@ -362,11 +391,8 @@ const Auth = {
         
         console.log('✅ Auth restored from localStorage:', user);
         
-        // Update menu if it exists
-        if (window.Menu) {
-          Menu.showPrivateMenu(user);
-          console.log('✅ Private menu activated for:', user.name);
-        }
+        // Update menu with retry logic
+        this.updateMenuAfterAuth(user);
       } catch (e) {
         console.error('❌ Failed to parse stored user:', e);
         localStorage.removeItem('gymtracker_user');
@@ -439,3 +465,40 @@ const Auth = {
     return false;
   }
 };
+
+// Session management for API tokens
+Auth.setSession = function(session) {
+  try {
+    localStorage.setItem('gymtracker_session', JSON.stringify(session));
+    console.log('[Auth] session stored:', !!session);
+  } catch (e) {
+    console.error('[Auth] setSession error:', e);
+  }
+};
+
+Auth.getSession = function() {
+  try {
+    const raw = localStorage.getItem('gymtracker_session');
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    console.error('[Auth] getSession error:', e);
+    return null;
+  }
+};
+
+Auth.clearSession = function() {
+  try {
+    localStorage.removeItem('gymtracker_session');
+    console.log('[Auth] session cleared');
+  } catch (e) {
+    console.error('[Auth] clearSession error:', e);
+  }
+};
+
+// Expose globally so other modules and inline code can access it
+try {
+  window.Auth = Auth;
+  console.log('🌐 Auth exposed on window');
+} catch (e) {
+  // no-op in non-browser environments
+}

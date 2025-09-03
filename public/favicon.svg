@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="64" height="64" rx="12" ry="12" fill="#ffffff"/>
+  <g transform="translate(8,8)">
+    <!-- Bar -->
+    <rect x="8" y="22" width="40" height="4" rx="2" fill="url(#g)"/>
+    <!-- Left plates -->
+    <rect x="2" y="18" width="4" height="12" rx="2" fill="#1d4ed8"/>
+    <rect x="6" y="16" width="4" height="16" rx="2" fill="#3b82f6"/>
+    <!-- Right plates -->
+    <rect x="48" y="18" width="4" height="12" rx="2" fill="#1d4ed8"/>
+    <rect x="44" y="16" width="4" height="16" rx="2" fill="#3b82f6"/>
+  </g>
+</svg>

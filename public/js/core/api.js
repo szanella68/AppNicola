@@ -38,14 +38,25 @@ class API {
 
     // Get current user session token
     getAuthToken() {
-        const session = Auth.getSession();
-        return session?.access_token;
+        try {
+            const session = (typeof Auth !== 'undefined' && typeof Auth.getSession === 'function')
+                ? Auth.getSession()
+                : null;
+            const token = session?.access_token;
+            return token || null;
+        } catch (e) {
+            console.warn('[API] getAuthToken error:', e);
+            return null;
+        }
     }
 
     // Generic API request handler
     async request(endpoint, options = {}) {
         try {
             const token = this.getAuthToken();
+            if (!token && !endpoint.startsWith('/auth')) {
+                console.warn('[API] Missing access token');
+            }
             const defaultOptions = {
                 headers: {
                     'Content-Type': 'application/json',
@@ -172,7 +183,7 @@ class API {
     async getWorkouts() {
         try {
             const response = await this.request('/workouts');
-            return response.workouts || [];
+            return response.workoutPlans || [];
         } catch (error) {
             Utils.showError('Errore nel caricamento delle schede');
             throw error;

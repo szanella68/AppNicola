@@ -87,12 +87,12 @@ class Profilo {
     async loadUserData() {
         try {
             // Load current user info
-            const userResponse = await API.getCurrentUser();
+            const userResponse = await window.API.getCurrentUser();
             this.currentUser = userResponse.user;
             this.profile = userResponse.profile;
 
             // Load user statistics
-            this.stats = await API.getUserStats();
+            this.stats = await window.API.getUserStats();
 
             console.log('✅ User data loaded:', this.currentUser);
         } catch (error) {
@@ -399,7 +399,7 @@ class Profilo {
             submitBtn.textContent = 'Salvando...';
             submitBtn.disabled = true;
 
-            await API.updateProfile(profileData);
+            await window.API.updateProfile(profileData);
             
             // Update local data
             this.currentUser.fullName = profileData.full_name;
@@ -444,7 +444,7 @@ class Profilo {
             submitBtn.disabled = true;
 
             // TODO: Implement password change API
-            // await API.changePassword(currentPassword, newPassword);
+            // await window.API.changePassword(currentPassword, newPassword);
             
             // For now, simulate success
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -547,7 +547,7 @@ class Profilo {
     async deleteAccount() {
         try {
             // TODO: Implement account deletion API
-            // await API.deleteAccount();
+            // await window.API.deleteAccount();
             
             Utils.showSuccess('Account eliminato. Verrai disconnesso tra poco...');
             
@@ -570,7 +570,7 @@ class Profilo {
             // Collect user data
             const exportData = {
                 profile: this.profile,
-                workouts: await API.getWorkouts(),
+                workouts: await window.API.getWorkouts(),
                 stats: this.stats,
                 settings: this.settings,
                 exportDate: new Date().toISOString()
