@@ -368,7 +368,7 @@ const herokuConfig = {
   "Procfile": "web: node server.js",
   "app.json": {
     "name": "GymTracker",
-    "description": "Personal trainer digitale per gestione schede allenamento",
+    "description": "Personal trainer digitale per gestione sessioni allenamento",
     "repository": "https://github.com/your-username/gymtracker",
     "logo": "https://your-domain.com/logo.png",
     "keywords": ["fitness", "gym", "workout", "nodejs", "supabase"],

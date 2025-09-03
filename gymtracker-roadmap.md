@@ -31,7 +31,7 @@
 📁 public/
 ├── 🏠 home.html              ✅ FATTO - Landing + Auth
 ├── 🎯 app.html               ✅ FATTO - Hub post-login  
-├── 💪 schede.html            ⏳ TODO - Workout management
+├── 💪 sessioni.html            ⏳ TODO - Workout management
 ├── 📅 calendario.html        ⏳ TODO - Calendar planning
 ├── 👤 profilo.html           ⏳ TODO - User profile
 ├── 📋 terms.html             ⏳ TODO - Legal (enhanced)
@@ -45,7 +45,7 @@
 ├── css/
 │   ├── shared.css            ✅ FATTO - Global styles
 │   ├── menu-component.css    ✅ FATTO - Menu dropdown
-│   ├── schede.css            ⏳ TODO - Page-specific
+│   ├── sessioni.css            ⏳ TODO - Page-specific
 │   ├── calendario.css        ⏳ TODO - Page-specific  
 │   └── profilo.css           ⏳ TODO - Page-specific
 └── js/
@@ -56,7 +56,7 @@
     │   ├── api.js             ⏳ TODO - Supabase integration
     │   └── utils.js           ⏳ TODO - Shared utilities
     └── pages/
-        ├── schede.js          ⏳ TODO - Workout logic
+        ├── sessioni.js          ⏳ TODO - Workout logic
         ├── calendario.js      ⏳ TODO - Calendar logic
         └── profilo.js         ⏳ TODO - Profile logic
 ```
@@ -70,7 +70,7 @@
 - [x] **app.html** → Hub dashboard + menu dropdown completo  
 - [x] **js/menu-component.js** → Navigation tra pagine + active states
 - [x] Menu dropdown con 3 sezioni organizzate:
-  - Core App Functions (Hub, Schede, Calendario, Profilo)
+  - Core App Functions (Hub, Sessioni, Calendario, Profilo)
   - Legal & Support (Terms, Privacy, Contatti)  
   - Logout
 
@@ -95,23 +95,23 @@
 ### **🚀 STEP 3 - IMMEDIATE NEXT: Core Pages Creation**
 **Priority: HIGH | Estimated: 2-3 giorni**
 
-#### **A) schede.html (Workout Management)**
-**File da creare:** `public/schede.html`
+#### **A) sessioni.html (Workout Management)**
+**File da creare:** `public/sessioni.html`
 
 **Contenuto richiesto:**
-- Lista schede esistenti (da Supabase)  
-- CRUD completo: Create, Read, Update, Delete schede
-- Gestione esercizi dentro ogni scheda
+- Lista sessioni esistenti (da Supabase)  
+- CRUD completo: Create, Read, Update, Delete sessioni
+- Gestione esercizi dentro ogni sessione
 - Form validazione professionale
 - Stati loading/empty/error
 - Mobile responsive
 
 **API Endpoints necessari:**
 ```javascript
-GET /api/workouts        // Lista schede utente
-POST /api/workouts       // Crea nuova scheda  
-PUT /api/workouts/:id    // Modifica scheda
-DELETE /api/workouts/:id // Elimina scheda
+GET /api/workouts        // Lista sessioni utente
+POST /api/workouts       // Crea nuova sessione  
+PUT /api/workouts/:id    // Modifica sessione
+DELETE /api/workouts/:id // Elimina sessione
 POST /api/workouts/:id/exercises     // Aggiungi esercizio
 DELETE /api/workouts/:workoutId/exercises/:exerciseId // Rimuovi esercizio
 ```
@@ -121,9 +121,9 @@ DELETE /api/workouts/:workoutId/exercises/:exerciseId // Rimuovi esercizio
 
 **Contenuto richiesto:**
 - Calendar widget interattivo (settimanale/mensile)
-- Drag & drop schede su giorni
+- Drag & drop sessioni su giorni
 - Vista pianificazione allenamenti
-- Integration con schede esistenti
+- Integration con sessioni esistenti
 - Reminder/notification system placeholder
 
 #### **C) profilo.html (User Management)**
@@ -132,7 +132,7 @@ DELETE /api/workouts/:workoutId/exercises/:exerciseId // Rimuovi esercizio
 **Contenuto richiesto:**  
 - Form dati personali (nome, email, età, livello fitness)
 - Obiettivi fitness e note
-- Statistiche utente (schede create, allenamenti fatti)
+- Statistiche utente (sessioni create, allenamenti fatti)
 - Settings applicazione
 - Password change
 - Account deletion
@@ -174,8 +174,8 @@ showSuccessMessage(message)
 showErrorMessage(message)
 ```
 
-#### **B) js/pages/schede.js - Workout Logic**
-**File da creare:** `public/js/pages/schede.js`
+#### **B) js/pages/sessioni.js - Workout Logic**
+**File da creare:** `public/js/pages/sessioni.js`
 
 **Funzioni richieste:**
 ```javascript
@@ -239,7 +239,7 @@ renderStatsCharts(stats)
 
 #### **CSS Files da creare:**
 
-**A) public/css/schede.css**
+**A) public/css/sessioni.css**
 ```css
 /* Workout forms + cards + responsive tables */
 .workout-grid { }
@@ -283,7 +283,7 @@ renderStatsCharts(stats)
 - [ ] Mobile responsive (320px → 1920px+)  
 - [ ] Navigation flow completo (tutte le pagine)
 - [ ] Auth flow: login → logout → re-login
-- [ ] CRUD operations: Create scheda → Add esercizi → Edit → Delete
+- [ ] CRUD operations: Create sessione → Add esercizi → Edit → Delete
 - [ ] Error handling: network errors, validation errors
 - [ ] Performance: page load times, API response times
 - [ ] Accessibility: keyboard navigation, screen readers
@@ -322,7 +322,7 @@ workout_logs: user_id restrictions (se implementato)
 
 **ENSURE che tutte le nuove pagine funzionino con:**
 ```apache
-https://zanserver.sytes.net/nicola/schede.html → localhost:3007/schede.html
+https://zanserver.sytes.net/nicola/sessioni.html → localhost:3007/sessioni.html
 https://zanserver.sytes.net/nicola/calendario.html → localhost:3007/calendario.html  
 https://zanserver.sytes.net/nicola/profilo.html → localhost:3007/profilo.html
 ```
@@ -338,7 +338,7 @@ https://zanserver.sytes.net/nicola/profilo.html → localhost:3007/profilo.html
 
 **Auth Check Pattern:**
 ```javascript
-// In ogni pagina protetta (schede.html, calendario.html, profilo.html)
+// In ogni pagina protetta (sessioni.html, calendario.html, profilo.html)
 document.addEventListener('DOMContentLoaded', async () => {
     if (!Auth.isAuthenticated()) {
         window.location.href = 'home.html';
@@ -355,28 +355,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 ### **NEXT SESSION START HERE:**
 
 **Resume Message per nuova chat:**
-> "Sto continuando il progetto GymTracker da STEP 3. Ho completato Step 1-2 (menu professionale + template system). Ora devo creare schede.html con CRUD completo per workout management. Seguendo architettura separate pages professionale. Posso procedere con schede.html?"
+> "Sto continuando il progetto GymTracker da STEP 3. Ho completato Step 1-2 (menu professionale + template system). Ora devo creare sessioni.html con CRUD completo per workout management. Seguendo architettura separate pages professionale. Posso procedere con sessioni.html?"
 
 ### **Immediate Tasks Priorità:**
 
-1. **Create schede.html** usando template system già creato
+1. **Create sessioni.html** usando template system già creato
 2. **Implement basic Supabase API calls** in js/core/api.js  
-3. **Build workout CRUD forms** in schede.html
+3. **Build workout CRUD forms** in sessioni.html
 4. **Test workflow**: Login → Hub → Schede → Create workout → Success
 
 ### **Success Criteria Step 3:**
-- ✅ User può creare una nuova scheda di allenamento
-- ✅ User può aggiungere esercizi alla scheda  
+- ✅ User può creare una nuova sessione di allenamento
+- ✅ User può aggiungere esercizi alla sessione  
 - ✅ Data viene salvata in Supabase correttamente
-- ✅ Lista schede viene mostrata dopo creazione
+- ✅ Lista sessioni viene mostrata dopo creazione
 - ✅ Navigation menu funziona tra tutte le pagine
 
 ### **File da creare FIRST (in ordine):**
 ```
 1. public/js/core/api.js        // Supabase integration
-2. public/schede.html          // Main workout page  
-3. public/js/pages/schede.js   // Workout logic
-4. public/css/schede.css       // Workout styling
+2. public/sessioni.html          // Main workout page  
+3. public/js/pages/sessioni.js   // Workout logic
+4. public/css/sessioni.css       // Workout styling
 ```
 
 ---
@@ -422,7 +422,7 @@ Professional fitness app con:
 1. User lands on home.html → Sees professional landing
 2. User clicks Register → Modal signup → Auto redirect to app.html
 3. User sees Hub with stats + service cards
-4. User clicks "Schede" → Goes to schede.html  
+4. User clicks "Sessioni" → Goes to sessioni.html  
 5. User creates workout → Adds exercises → Saves to Supabase
 6. User clicks "Calendario" → Plans workout sessions
 7. User clicks "Profilo" → Manages account settings
@@ -454,4 +454,4 @@ Professional fitness app con:
 
 ---
 
-**READY TO CONTINUE FROM STEP 3: schede.html Creation** 🚀
+**READY TO CONTINUE FROM STEP 3: sessioni.html Creation** 🚀

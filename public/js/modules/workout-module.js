@@ -1,5 +1,5 @@
 /**
- * Workout Module - Gestione completa schede di allenamento e esercizi
+ * Workout Module - Gestione completa sessioni di allenamento e esercizi
  */
 class WorkoutModule {
   constructor() {
@@ -16,8 +16,8 @@ class WorkoutModule {
       
       this.renderWorkouts();
     } catch (e) {
-      console.error('Errore caricamento schede:', e);
-      DOMUtils.showAlert('Errore nel caricamento delle schede: ' + e.message, 'error');
+      console.error('Errore caricamento sessioni:', e);
+      DOMUtils.showAlert('Errore nel caricamento delle sessioni: ' + e.message, 'error');
       this.currentWorkouts = [];
       this.renderWorkouts();
     } finally {
@@ -88,8 +88,8 @@ class WorkoutModule {
 
       this.renderExercises();
     } catch (e) {
-      console.error('Errore visualizzazione scheda:', e);
-      DOMUtils.showAlert('Errore nel caricamento della scheda: ' + e.message, 'error');
+      console.error('Errore visualizzazione sessione:', e);
+      DOMUtils.showAlert('Errore nel caricamento della sessione: ' + e.message, 'error');
     } finally {
       DOMUtils.hideLoading();
     }
@@ -104,7 +104,7 @@ class WorkoutModule {
         <div class="text-center p-4">
           <i class="fas fa-plus-circle text-4xl text-secondary mb-4"></i>
           <h4>Nessun esercizio</h4>
-          <p class="text-secondary mb-4">Aggiungi il primo esercizio a questa scheda</p>
+          <p class="text-secondary mb-4">Aggiungi il primo esercizio a questa sessione</p>
           <button onclick="DOMUtils.showModal('add-exercise-modal')" class="btn btn-primary">
             <i class="fas fa-plus"></i> Aggiungi Esercizio
           </button>
@@ -138,32 +138,32 @@ class WorkoutModule {
       await window.apiUtils.workouts('', workoutData, 'POST');
       
       DOMUtils.hideModal('new-workout-modal');
-      DOMUtils.showAlert('Scheda creata con successo!', 'success');
+      DOMUtils.showAlert('Sessione creata con successo!', 'success');
       await this.loadWorkouts();
 
       // Reset del form
       this.resetNewWorkoutForm();
     } catch (e) {
-      console.error('Errore creazione scheda:', e);
-      DOMUtils.showAlert('Errore nella creazione della scheda: ' + e.message, 'error');
+      console.error('Errore creazione sessione:', e);
+      DOMUtils.showAlert('Errore nella creazione della sessione: ' + e.message, 'error');
     } finally {
       DOMUtils.hideLoading();
     }
   }
 
   async deleteWorkout(id, name) {
-    if (!confirm(`Sei sicuro di voler eliminare la scheda "${name}"?`)) return;
+    if (!confirm(`Sei sicuro di voler eliminare la sessione "${name}"?`)) return;
     
     try {
       DOMUtils.showLoading();
       
       await window.apiUtils.workouts(id, null, 'DELETE');
       
-      DOMUtils.showAlert('Scheda eliminata con successo!', 'success');
+      DOMUtils.showAlert('Sessione eliminata con successo!', 'success');
       await this.loadWorkouts();
     } catch (e) {
-      console.error('Errore eliminazione scheda:', e);
-      DOMUtils.showAlert('Errore nell\'eliminazione della scheda: ' + e.message, 'error');
+      console.error('Errore eliminazione sessione:', e);
+      DOMUtils.showAlert('Errore nell\'eliminazione della sessione: ' + e.message, 'error');
     } finally {
       DOMUtils.hideLoading();
     }

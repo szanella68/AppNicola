@@ -1,7 +1,7 @@
 {
   "name": "gymtracker-app",
   "version": "1.0.0",
-  "description": "Applicazione web per la gestione delle schede di allenamento in palestra",
+  "description": "Applicazione web per la gestione delle sessioni di allenamento in palestra",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

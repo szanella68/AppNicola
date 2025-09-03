@@ -56,7 +56,7 @@ GymTracker is a Node.js web application for managing gym workout plans, built wi
 public/
 ├── home.html              ✅ Landing + Auth
 ├── app.html               ✅ Hub post-login  
-├── schede.html            ✅ Full workout management functionality
+├── sessioni.html            ✅ Full workout management functionality
 ├── calendario.html        ✅ Complete calendar with drag-drop scheduling
 ├── profilo.html           ✅ Profile management with achievements
 ├── terms.html             🔶 HTML exists, needs enhancement
@@ -71,7 +71,7 @@ public/
 │   ├── shared.css         ✅ Global styles
 │   ├── menu-component.css ✅ Menu dropdown  
 │   ├── content-pages.css  ✅ Additional styling found
-│   ├── schede.css         ✅ Professional workout page styling
+│   ├── sessioni.css         ✅ Professional workout page styling
 │   ├── calendario.css     ✅ Calendar styling with drag-drop support
 │   └── profilo.css        ✅ Profile page styling with responsive design
 └── js/
@@ -82,7 +82,7 @@ public/
     │   ├── api.js             ✅ Comprehensive Supabase integration
     │   └── utils.js           ✅ Utilities and notification system
     ├── pages/
-    │   ├── schede.js          ✅ Complete workout CRUD functionality
+    │   ├── sessioni.js          ✅ Complete workout CRUD functionality
     │   ├── calendario.js      ✅ Full calendar with monthly/weekly views
     │   └── profilo.js         ✅ Profile management with settings
     ├── modules/               ✅ UNEXPECTED - Additional structure found
@@ -118,9 +118,9 @@ The application uses these main tables with Row Level Security:
 - Created `public/templates/base-template.html` - Template system foundation
 - Created `public/js/core/api.js` - Comprehensive Supabase integration
 - Created `public/js/core/utils.js` - Utilities and notification system
-- Created `public/css/schede.css` - Professional workout page styling
-- Created `public/js/pages/schede.js` - Complete workout CRUD functionality
-- Updated `schede.html` to use template system
+- Created `public/css/sessioni.css` - Professional workout page styling
+- Created `public/js/pages/sessioni.js` - Complete workout CRUD functionality
+- Updated `sessioni.html` to use template system
 
 ### ✅ Step 4A: Calendar Implementation (COMPLETED)
 - Created `public/css/calendario.css` - Calendar styling with drag-drop support
@@ -144,7 +144,7 @@ The application uses these main tables with Row Level Security:
 
 **✅ Cross-Page Navigation:**
 - Menu component loads consistently across all pages
-- Navigation between schede.html, calendario.html, and profilo.html works
+- Navigation between sessioni.html, calendario.html, and profilo.html works
 - Template system properly loads headers and footers
 - No broken links or missing components
 
@@ -178,10 +178,10 @@ The application uses these main tables with Row Level Security:
 
 ### API Endpoints for Workout Management
 ```javascript
-GET /api/workouts        // Lista schede utente
-POST /api/workouts       // Crea nuova scheda  
-PUT /api/workouts/:id    // Modifica scheda
-DELETE /api/workouts/:id // Elimina scheda
+GET /api/workouts        // Lista sessioni utente
+POST /api/workouts       // Crea nuova sessione  
+PUT /api/workouts/:id    // Modifica sessione
+DELETE /api/workouts/:id // Elimina sessione
 POST /api/workouts/:id/exercises     // Aggiungi esercizio
 DELETE /api/workouts/:workoutId/exercises/:exerciseId // Rimuovi esercizio
 ```

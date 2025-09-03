@@ -272,8 +272,8 @@ class WorkoutManager {
       currentWorkouts = response.workoutPlans || [];
       this.renderWorkouts();
     } catch (e) {
-      console.error('Errore caricamento schede:', e);
-      Utils.showAlert('Errore nel caricamento delle schede: ' + e.message, 'error');
+      console.error('Errore caricamento sessioni:', e);
+      Utils.showAlert('Errore nel caricamento delle sessioni: ' + e.message, 'error');
       currentWorkouts = [];
       this.renderWorkouts();
     } finally {
@@ -340,8 +340,8 @@ class WorkoutManager {
 
       this.renderExercises();
     } catch (e) {
-      console.error('Errore visualizzazione scheda:', e);
-      Utils.showAlert('Errore nel caricamento della scheda: ' + e.message, 'error');
+      console.error('Errore visualizzazione sessione:', e);
+      Utils.showAlert('Errore nel caricamento della sessione: ' + e.message, 'error');
     } finally {
       Utils.hideLoading();
     }
@@ -356,7 +356,7 @@ class WorkoutManager {
         <div class="text-center p-4">
           <i class="fas fa-plus-circle text-4xl text-secondary mb-4"></i>
           <h4>Nessun esercizio</h4>
-          <p class="text-secondary mb-4">Aggiungi il primo esercizio a questa scheda</p>
+          <p class="text-secondary mb-4">Aggiungi il primo esercizio a questa sessione</p>
           <button onclick="Utils.showModal('add-exercise-modal')" class="btn btn-primary">
             <i class="fas fa-plus"></i> Aggiungi Esercizio
           </button>
@@ -388,7 +388,7 @@ class WorkoutManager {
       Utils.showLoading();
       await Utils.apiRequest('/workouts', { method: 'POST', body: workoutData });
       Utils.hideModal('new-workout-modal');
-      Utils.showAlert('Scheda creata con successo!', 'success');
+      Utils.showAlert('Sessione creata con successo!', 'success');
       await this.loadWorkouts();
 
       // reset mini-form
@@ -427,23 +427,23 @@ class WorkoutManager {
           </div>`;
       }
     } catch (e) {
-      console.error('Errore creazione scheda:', e);
-      Utils.showAlert('Errore nella creazione della scheda: ' + e.message, 'error');
+      console.error('Errore creazione sessione:', e);
+      Utils.showAlert('Errore nella creazione della sessione: ' + e.message, 'error');
     } finally {
       Utils.hideLoading();
     }
   }
 
   static async deleteWorkout(id, name) {
-    if (!confirm(`Sei sicuro di voler eliminare la scheda "${name}"?`)) return;
+    if (!confirm(`Sei sicuro di voler eliminare la sessione "${name}"?`)) return;
     try {
       Utils.showLoading();
       await Utils.apiRequest(`/workouts/${id}`, { method: 'DELETE' });
-      Utils.showAlert('Scheda eliminata con successo!', 'success');
+      Utils.showAlert('Sessione eliminata con successo!', 'success');
       await this.loadWorkouts();
     } catch (e) {
-      console.error('Errore eliminazione scheda:', e);
-      Utils.showAlert('Errore nell\'eliminazione della scheda: ' + e.message, 'error');
+      console.error('Errore eliminazione sessione:', e);
+      Utils.showAlert('Errore nell\'eliminazione della sessione: ' + e.message, 'error');
     } finally {
       Utils.hideLoading();
     }

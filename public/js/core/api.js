@@ -185,7 +185,7 @@ class API {
             const response = await this.request('/workouts');
             return response.workoutPlans || [];
         } catch (error) {
-            Utils.showError('Errore nel caricamento delle schede');
+            Utils.showError('Errore nel caricamento delle sessioni');
             throw error;
         }
     }
@@ -197,10 +197,10 @@ class API {
                 body: JSON.stringify(workoutData)
             });
             
-            Utils.showSuccess(`Scheda "${workoutData.name}" creata con successo!`);
+            Utils.showSuccess(`Sessione "${workoutData.name}" creata con successo!`);
             return response;
         } catch (error) {
-            Utils.showError(`Errore nella creazione della scheda: ${error.message}`);
+            Utils.showError(`Errore nella creazione della sessione: ${error.message}`);
             throw error;
         }
     }
@@ -212,10 +212,10 @@ class API {
                 body: JSON.stringify(workoutData)
             });
             
-            Utils.showSuccess('Scheda aggiornata con successo!');
+            Utils.showSuccess('Sessione aggiornata con successo!');
             return response;
         } catch (error) {
-            Utils.showError(`Errore nell'aggiornamento della scheda: ${error.message}`);
+            Utils.showError(`Errore nell'aggiornamento della sessione: ${error.message}`);
             throw error;
         }
     }
@@ -223,9 +223,9 @@ class API {
     async deleteWorkout(id) {
         try {
             await this.request(`/workouts/${id}`, { method: 'DELETE' });
-            Utils.showSuccess('Scheda eliminata con successo!');
+            Utils.showSuccess('Sessione eliminata con successo!');
         } catch (error) {
-            Utils.showError(`Errore nell'eliminazione della scheda: ${error.message}`);
+            Utils.showError(`Errore nell'eliminazione della sessione: ${error.message}`);
             throw error;
         }
     }
@@ -303,10 +303,25 @@ class API {
     async getUserStats() {
         try {
             const response = await this.request('/profile/stats');
-            return response.stats;
+            const s = response?.stats || {};
+            let normalized = {
+                totalWorkouts: s.totalWorkouts ?? s.total_workout_plans ?? 0,
+                totalExercises: s.totalExercises ?? s.total_exercises ?? 0,
+                completedSessions: s.completedSessions ?? s.completed_sessions ?? 0,
+                streakDays: s.streakDays ?? s.streak_days ?? 0,
+            };
+            // Fallback: if totals look missing, compute from workouts
+            if (!normalized.totalWorkouts || !normalized.totalExercises) {
+                try {
+                    const workouts = await this.getWorkouts();
+                    normalized.totalWorkouts = workouts.length;
+                    normalized.totalExercises = workouts.reduce((acc, w) => acc + (w.exercises?.length || 0), 0);
+                } catch (_) {}
+            }
+            return normalized;
         } catch (error) {
             console.error('Get user stats failed:', error);
-            return null; // Non-critical, don't show error to user
+            return { totalWorkouts: 0, totalExercises: 0, completedSessions: 0, streakDays: 0 };
         }
     }
 
@@ -341,6 +356,56 @@ class API {
             console.error('Health check failed:', error);
             return null;
         }
+    }
+
+    // SCHEDULING (CALENDAR)
+    async getScheduled(from, to) {
+        const params = new URLSearchParams();
+        if (from) params.set('from', from);
+        if (to) params.set('to', to);
+        const qs = params.toString() ? `?${params.toString()}` : '';
+        const response = await this.request(`/schedule${qs}`);
+        return response.scheduled || [];
+    }
+
+    async scheduleWorkout({ workout_id, date, time, notes }) {
+        const payload = { workout_id, date, ...(time && { time }), ...(notes && { notes }) };
+        const response = await this.request('/schedule', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        return response.scheduled;
+    }
+
+    async updateScheduled(id, { date, time, notes, status }) {
+        const response = await this.request(`/schedule/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                ...(date !== undefined ? { date } : {}),
+                ...(time !== undefined ? { time } : {}),
+                ...(notes !== undefined ? { notes } : {}),
+                ...(status !== undefined ? { status } : {})
+            })
+        });
+        return response.scheduled;
+    }
+
+    async deleteScheduled(id) {
+        await this.request(`/schedule/${id}`, { method: 'DELETE' });
+        return true;
+    }
+
+    async completeScheduled(id, { exercises = [], notes } = {}) {
+        const response = await this.request(`/schedule/${id}/complete`, {
+            method: 'POST',
+            body: JSON.stringify({ exercises, ...(notes ? { notes } : {}) })
+        });
+        return response;
+    }
+
+    async missScheduled(id) {
+        const response = await this.request(`/schedule/${id}/miss`, { method: 'POST' });
+        return response;
     }
 }
 

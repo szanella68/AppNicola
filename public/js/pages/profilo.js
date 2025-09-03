@@ -163,6 +163,38 @@ class Profilo {
                     </div>
                 </div>
 
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="weightKg">Peso (kg)</label>
+                        <input type="number" id="weightKg" name="weight_kg" class="form-input"
+                               value="${this.profile?.weight_kg ?? ''}" min="0" max="500" step="0.1" placeholder="Es: 72.5">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="heightCm">Altezza (cm)</label>
+                        <input type="number" id="heightCm" name="height_cm" class="form-input"
+                               value="${this.profile?.height_cm ?? ''}" min="0" max="300" step="0.1" placeholder="Es: 178">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="gender">Genere</label>
+                        <select id="gender" name="gender" class="form-select">
+                            <option value="">Non specificato</option>
+                            <option value="M" ${this.profile?.gender === 'M' ? 'selected' : ''}>Maschio</option>
+                            <option value="F" ${this.profile?.gender === 'F' ? 'selected' : ''}>Femmina</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="injuries">Infortuni / Limitazioni</label>
+                        <textarea id="injuries" name="injuries_limitations" class="form-textarea" placeholder="Descrivi eventuali infortuni o limitazioni...">${this.profile?.injuries_limitations || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="medications">Medicinali assunti</label>
+                        <textarea id="medications" name="medications" class="form-textarea" placeholder="Elenca eventuali medicinali...">${this.profile?.medications || ''}</textarea>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label class="form-label" for="goals">Obiettivi Fitness</label>
                     <textarea id="goals" name="goals" class="form-textarea" 
@@ -193,7 +225,7 @@ class Profilo {
             <div class="stats-dashboard">
                 <div class="stat-item">
                     <div class="stat-number">${stats.totalWorkouts}</div>
-                    <div class="stat-label">Schede Create</div>
+                    <div class="stat-label">Sessioni Create</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">${stats.completedSessions}</div>
@@ -223,7 +255,7 @@ class Profilo {
                 <div style="text-align: center; padding: 2rem; color: #6b7280;">
                     <p>🏆 I tuoi traguardi appariranno qui</p>
                     <p style="font-size: 0.9rem; margin-top: 0.5rem;">
-                        Completa allenamenti e crea schede per sbloccare i primi achievement!
+                        Completa allenamenti e crea sessioni per sbloccare i primi achievement!
                     </p>
                 </div>
             `;
@@ -278,7 +310,7 @@ class Profilo {
                     <div class="setting-item">
                         <div class="setting-info">
                             <div class="setting-name">Salvataggio Automatico</div>
-                            <div class="setting-desc">Salva automaticamente le modifiche alle schede</div>
+                            <div class="setting-desc">Salva automaticamente le modifiche alle sessioni</div>
                         </div>
                         <div class="toggle-switch ${this.settings.autoSave ? 'active' : ''}" 
                              data-setting="autoSave">
@@ -378,7 +410,12 @@ class Profilo {
             full_name: formData.get('fullName').trim(),
             age: formData.get('age') ? parseInt(formData.get('age')) : null,
             fitness_level: formData.get('fitnessLevel') || null,
-            goals: formData.get('goals').trim()
+            goals: formData.get('goals').trim(),
+            weight_kg: formData.get('weight_kg') ? parseFloat(formData.get('weight_kg')) : null,
+            height_cm: formData.get('height_cm') ? parseFloat(formData.get('height_cm')) : null,
+            gender: formData.get('gender') || null,
+            injuries_limitations: formData.get('injuries_limitations')?.trim() || null,
+            medications: formData.get('medications')?.trim() || null
         };
 
         // Validation
@@ -524,7 +561,7 @@ class Profilo {
                     <div class="confirmation-title">Elimina Account</div>
                     <div class="confirmation-message">
                         Sei sicuro di voler eliminare il tuo account?<br>
-                        Tutti i tuoi dati, schede e progressi verranno persi per sempre.<br>
+                        Tutti i tuoi dati, sessioni e progressi verranno persi per sempre.<br>
                         <strong>Questa azione non può essere annullata.</strong>
                     </div>
                     <div class="confirmation-actions">
@@ -653,7 +690,7 @@ class Profilo {
             achievements.push({
                 icon: '🏋️',
                 title: 'Primo Allenamento',
-                description: 'Hai creato la tua prima scheda!'
+                description: 'Hai creato la tua prima sessione!'
             });
         }
 

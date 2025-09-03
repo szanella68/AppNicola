@@ -39,7 +39,7 @@ router.get('/', authenticateUser, async (req, res) => {
 router.put('/', authenticateUser, async (req, res) => {
   try {
     const userId = req.user.id;
-    const { full_name, age, fitness_level, goals } = req.body;
+    const { full_name, age, fitness_level, goals, weight_kg, height_cm, gender, injuries_limitations, medications } = req.body;
 
     // Validazione dati
     const updateData = {
@@ -61,6 +61,27 @@ router.put('/', authenticateUser, async (req, res) => {
       updateData.fitness_level = fitness_level;
     }
     if (goals !== undefined) updateData.goals = goals;
+
+    // New optional fields with basic validation
+    if (weight_kg !== undefined) {
+      const w = parseFloat(weight_kg);
+      if (weight_kg === null || weight_kg === '') updateData.weight_kg = null;
+      else if (!Number.isNaN(w) && w >= 0 && w <= 500) updateData.weight_kg = w;
+      else return res.status(400).json({ error: 'Peso non valido' });
+    }
+    if (height_cm !== undefined) {
+      const h = parseFloat(height_cm);
+      if (height_cm === null || height_cm === '') updateData.height_cm = null;
+      else if (!Number.isNaN(h) && h >= 0 && h <= 300) updateData.height_cm = h;
+      else return res.status(400).json({ error: 'Altezza non valida' });
+    }
+    if (gender !== undefined) {
+      if (gender === null || gender === '') updateData.gender = null;
+      else if (['M','F'].includes(gender)) updateData.gender = gender;
+      else return res.status(400).json({ error: 'Genere non valido' });
+    }
+    if (injuries_limitations !== undefined) updateData.injuries_limitations = injuries_limitations || null;
+    if (medications !== undefined) updateData.medications = medications || null;
 
     const { data, error } = await dbHelpers.upsertUserProfile(userId, updateData);
 
@@ -165,14 +186,14 @@ router.delete('/', authenticateUser, async (req, res) => {
       });
     }
 
-    // Prima disattiva tutte le schede di allenamento
+    // Prima disattiva tutte le sessioni di allenamento
     const { error: plansError } = await supabase
       .from('workout_plans')
       .update({ is_active: false })
       .eq('user_id', userId);
 
     if (plansError) {
-      console.error('Errore disattivazione schede:', plansError);
+      console.error('Errore disattivazione sessioni:', plansError);
       return res.status(500).json({ error: 'Errore nella cancellazione dei dati' });
     }
 

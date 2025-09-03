@@ -41,7 +41,7 @@ VALUES
   ('bbbb2222-2222-2222-2222-222222222224', '11111111-1111-1111-1111-111111111112', 'Curl con Bilanciere', 3, 10, 30.0, 'Movimento pulito, senza slanci', 3, NOW()),
   ('bbbb2222-2222-2222-2222-222222222225', '11111111-1111-1111-1111-111111111112', 'Curl Martello', 3, 12, 15.0, 'Manubri in posizione neutra', 4, NOW());
 
--- Esercizi per la scheda "Gambe"
+-- Esercizi per la sessione "Gambe"
 INSERT INTO public.exercises (id, workout_plan_id, name, sets, reps, weight, notes, order_index, created_at)
 VALUES 
   ('cccc3333-3333-3333-3333-333333333331', '11111111-1111-1111-1111-111111111113', 'Squat con Bilanciere', 4, 8, 100.0, 'Scendere fino a coscie parallele al pavimento', 0, NOW()),
@@ -118,7 +118,7 @@ DECLARE
     user_level TEXT;
     total_workouts INTEGER;
 BEGIN
-    -- Ottieni livello utente e conteggio schede
+    -- Ottieni livello utente e conteggio sessioni
     SELECT fitness_level, 
            (SELECT COUNT(*) FROM workout_plans WHERE user_id = user_uuid AND is_active = true)
     INTO user_level, total_workouts
@@ -127,11 +127,11 @@ BEGIN
 
     -- Raccomandazioni basate su livello e attività
     IF total_workouts = 0 THEN
-        RETURN QUERY SELECT 'getting_started'::TEXT, 'Crea la tua prima scheda'::TEXT, 'Inizia il tuo percorso fitness creando una scheda di allenamento personalizzata'::TEXT;
+        RETURN QUERY SELECT 'getting_started'::TEXT, 'Crea la tua prima sessione'::TEXT, 'Inizia il tuo percorso fitness creando una sessione di allenamento personalizzata'::TEXT;
     END IF;
 
     IF user_level = 'beginner' AND total_workouts < 3 THEN
-        RETURN QUERY SELECT 'progression'::TEXT, 'Aggiungi varietà'::TEXT, 'Prova a creare schede per diversi gruppi muscolari'::TEXT;
+        RETURN QUERY SELECT 'progression'::TEXT, 'Aggiungi varietà'::TEXT, 'Prova a creare sessioni per diversi gruppi muscolari'::TEXT;
     END IF;
 
     IF user_level = 'intermediate' THEN
@@ -145,8 +145,8 @@ $$ LANGUAGE plpgsql;
 
 -- Commenti informativi
 COMMENT ON TABLE user_profiles IS 'Profili estesi degli utenti con informazioni fitness';
-COMMENT ON TABLE workout_plans IS 'Schede di allenamento create dagli utenti';  
-COMMENT ON TABLE exercises IS 'Esercizi specifici all''interno delle schede';
+COMMENT ON TABLE workout_plans IS 'Sessioni di allenamento create dagli utenti';  
+COMMENT ON TABLE exercises IS 'Esercizi specifici all''interno delle sessioni';
 COMMENT ON TABLE workout_logs IS 'Log degli allenamenti completati per tracking progressi';
 
 COMMENT ON VIEW user_workout_stats IS 'Statistiche aggregate per utente';

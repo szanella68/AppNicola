@@ -2,7 +2,7 @@ const express = require('express');
 const { authenticateUser, dbHelpers, supabase } = require('../config/supabase');
 const router = express.Router();
 
-// GET /api/workouts - Ottieni tutte le schede di allenamento dell'utente
+// GET /api/workouts - Ottieni tutte le sessioni di allenamento dell'utente
 router.get('/', authenticateUser, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -10,8 +10,8 @@ router.get('/', authenticateUser, async (req, res) => {
     const { data, error } = await dbHelpers.getUserWorkoutPlans(userId, req.supabaseAuth);
 
     if (error) {
-      console.error('Errore recupero schede:', error);
-      return res.status(500).json({ error: 'Errore nel recupero delle schede di allenamento' });
+      console.error('Errore recupero sessioni:', error);
+      return res.status(500).json({ error: 'Errore nel recupero delle sessioni di allenamento' });
     }
 
     // Ordina gli esercizi per order_index
@@ -22,12 +22,12 @@ router.get('/', authenticateUser, async (req, res) => {
 
     res.status(200).json({ workoutPlans });
   } catch (error) {
-    console.error('Errore interno recupero schede:', error);
+    console.error('Errore interno recupero sessioni:', error);
     res.status(500).json({ error: 'Errore interno del server' });
   }
 });
 
-// GET /api/workouts/:id - Ottieni una scheda specifica
+// GET /api/workouts/:id - Ottieni una sessione specifica
 router.get('/:id', authenticateUser, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -45,6 +45,9 @@ router.get('/:id', authenticateUser, async (req, res) => {
           reps,
           weight,
           notes,
+          recovery_seconds,
+          intensity,
+          media_url,
           order_index
         )
       `)
@@ -55,7 +58,7 @@ router.get('/:id', authenticateUser, async (req, res) => {
 
     if (error) {
       if (error.code === 'PGRST116') {
-        return res.status(404).json({ error: 'Scheda di allenamento non trovata' });
+        return res.status(404).json({ error: 'Sessione di allenamento non trovata' });
       }
       console.error('Errore recupero scheda:', error);
       return res.status(500).json({ error: 'Errore nel recupero della scheda' });
@@ -244,7 +247,7 @@ router.post('/:id/exercises', authenticateUser, async (req, res) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
-    const { name, sets, reps, weight, notes } = req.body;
+    const { name, sets, reps, weight, notes, recovery_seconds, intensity, media_url } = req.body;
 
     // Verifica proprietà scheda
     // *** FIX: Usa client autenticato ***
@@ -290,6 +293,11 @@ router.post('/:id/exercises', authenticateUser, async (req, res) => {
       reps: parseInt(reps),
       weight: weight ? parseFloat(weight) : null,
       notes: notes?.trim() || null,
+      recovery_seconds: recovery_seconds !== undefined && recovery_seconds !== null && recovery_seconds !== ''
+        ? parseInt(recovery_seconds) : null,
+      intensity: intensity !== undefined && intensity !== null && intensity !== ''
+        ? parseInt(intensity) : null,
+      media_url: media_url?.trim() || null,
       order_index: nextOrderIndex
     };
 
@@ -358,6 +366,19 @@ router.put('/:workoutId/exercises/:exerciseId', authenticateUser, async (req, re
     }
     if (weight !== undefined) updateData.weight = weight ? parseFloat(weight) : null;
     if (notes !== undefined) updateData.notes = notes?.trim() || null;
+    if (req.body.recovery_seconds !== undefined) {
+      const rs = parseInt(req.body.recovery_seconds);
+      updateData.recovery_seconds = (req.body.recovery_seconds === null || req.body.recovery_seconds === '') ? null
+        : (!Number.isNaN(rs) && rs >= 0 ? rs : updateData.recovery_seconds);
+    }
+    if (req.body.intensity !== undefined) {
+      const it = parseInt(req.body.intensity);
+      updateData.intensity = (req.body.intensity === null || req.body.intensity === '') ? null
+        : (!Number.isNaN(it) && it >= 0 && it <= 5 ? it : updateData.intensity);
+    }
+    if (req.body.media_url !== undefined) {
+      updateData.media_url = req.body.media_url?.trim() || null;
+    }
 
     // *** FIX: Usa client autenticato ***
     const { data, error } = await req.supabaseAuth

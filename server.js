@@ -61,10 +61,12 @@ app.get('/favicon.ico', (req, res) => {
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
 const workoutRoutes = require('./routes/workouts');
+const scheduleRoutes = require('./routes/schedule');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/workouts', workoutRoutes);
+app.use('/api/schedule', scheduleRoutes);
 
 /* ======== AGGIUNTA HEALTH ======== */
 app.get('/api/health', (req, res) => {
@@ -91,9 +93,9 @@ app.get('/api/config/public', (req, res) => {
 });
 /* ======== /CONFIG PUBBLICA ======== */
 
-// Route principale per servire l'app
+// Route principale per servire l'app (redirect relativo per preservare path proxy, es. /nicola)
 app.get('/', (req, res) => {
-  res.redirect('/home.html');
+  res.redirect('home.html');
 });
 
 // Catch all per SPA routing (solo per percorsi non esistenti)

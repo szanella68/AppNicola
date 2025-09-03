@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Mie Sessioni - GymTracker</title>
+    
+    <!-- Base CSS -->
+    <link rel="stylesheet" href="css/menu-component.css">
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/sessioni.css">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="headerContainer"></div>
+    
+    <!-- Main content area -->
+    <main id="mainContent" class="main-content">
+        <div class="schede-container">
+            <!-- Page Header -->
+            <div class="schede-header">
+                <div>
+                    <h1 class="schede-title">💪 Le Mie Sessioni di Allenamento</h1>
+                    <p class="schede-subtitle">Gestisci le tue sessioni di allenamento personalizzate</p>
+                </div>
+                <div class="schede-actions">
+                    <button class="btn-secondary" id="refreshBtn" title="Aggiorna">
+                        🔄 Aggiorna
+                    </button>
+                    <button class="btn-primary" id="newWorkoutBtn">
+                        ➕ Nuova Sessione
+                    </button>
+                </div>
+            </div>
+
+            <!-- Workouts Container -->
+            <div id="workoutsContainer">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer will be loaded dynamically -->
+    <div id="footerContainer"></div>
+    
+    <!-- Core JavaScript -->
+    <script src="js/core/template-loader.js"></script>
+    <script src="js/core/menu-component.js"></script>
+    <script src="js/core/auth.js"></script>
+    <script src="js/core/utils.js"></script>
+    <script src="js/core/api.js"></script>
+    <script src="js/pages/sessioni.js"></script>
+    
+    <!-- Page initialization -->
+    <script>
+        // Define page initialization function for TemplateLoader
+        window.PageInit = async function() {
+            try {
+                // Initialize page-specific functionality
+                await initPage();
+                console.log('✅ Sessioni page initialized');
+            } catch (error) {
+                console.error('❌ Sessioni page initialization error:', error);
+                if (window.Utils && Utils.showError) {
+                    Utils.showError('Errore nel caricamento della pagina');
+                }
+            }
+        };
+    </script>
+</body>
+</html>

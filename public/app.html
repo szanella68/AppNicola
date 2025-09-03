@@ -156,8 +156,8 @@
             <h2>I Tuoi Progressi</h2>
             <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-number" id="totalSchede">0</div>
-                    <div class="stat-label">Schede Totali</div>
+                    <div class="stat-number" id="totalSessioni">0</div>
+                    <div class="stat-label">Sessioni Totali</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number" id="totalEsercizi">0</div>
@@ -172,12 +172,21 @@
         
         <!-- Services Grid -->
         <section class="services-grid">
-            <div class="service-card" onclick="Menu.goto('schede')">
+            <div class="service-card" onclick="Menu.goto('sessioni')">
                 <div class="service-icon">💪</div>
+                <h3 class="service-title">Le Mie Sessioni</h3>
+                <p class="service-description">
+                    Crea, modifica e gestisci le tue sessioni di allenamento personalizzate. 
+                    Aggiungi esercizi, serie e ripetizioni.
+                </p>
+                <button class="service-button">Gestisci Sessioni</button>
+            </div>
+            
+            <div class="service-card" onclick="Menu.goto('schede')">
+                <div class="service-icon">📘</div>
                 <h3 class="service-title">Le Mie Schede</h3>
                 <p class="service-description">
-                    Crea, modifica e gestisci le tue schede di allenamento personalizzate. 
-                    Aggiungi esercizi, serie e ripetizioni.
+                    Crea e organizza le tue schede di allenamento.
                 </p>
                 <button class="service-button">Gestisci Schede</button>
             </div>
@@ -211,6 +220,8 @@
     <script src="js/core/template-loader.js"></script>
     <script src="js/core/menu-component.js"></script>
     <script src="js/core/auth.js"></script>
+    <script src="js/core/utils.js"></script>
+    <script src="js/core/api.js"></script>
     <script src="js/config/config-loader.js"></script>
     <!-- Supabase JS (CDN) for app auth flows -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -222,6 +233,19 @@
             // Auth and stats are initialized in the main DOMContentLoaded event
             // This page init is called by the template loader after components load
             console.log('App page initialized via template system');
+            // Populate overview counters using normalized API stats
+            if (window.API && typeof window.API.getUserStats === 'function') {
+                window.API.getUserStats().then(stats => {
+                    try {
+                        const tSessioni = document.getElementById('totalSessioni');
+                        const tEsercizi = document.getElementById('totalEsercizi');
+                        const wWeekly = document.getElementById('weeklyWorkouts');
+                        if (tSessioni) tSessioni.textContent = stats.totalWorkouts ?? 0;
+                        if (tEsercizi) tEsercizi.textContent = stats.totalExercises ?? 0;
+                        if (wWeekly) wWeekly.textContent = stats.completedSessions ?? 0; // placeholder
+                    } catch (e) { console.warn('Overview counters update failed:', e); }
+                }).catch(() => {});
+            }
         };
     </script>
  <script>

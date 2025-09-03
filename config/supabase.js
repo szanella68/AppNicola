@@ -71,7 +71,7 @@ const authenticateUser = async (req, res, next) => {
 
 // Aggiorna dbHelpers per usare client autenticato
 const dbHelpers = {
-  // Crea nuova scheda di allenamento CON AUTENTICAZIONE
+  // Crea nuova sessione di allenamento CON AUTENTICAZIONE
   async createWorkoutPlan(userId, planData, authClient = supabase) {
     const { data, error } = await authClient
       .from('workout_plans')
@@ -82,7 +82,7 @@ const dbHelpers = {
     return { data, error };
   },
 
-  // Ottieni schede di allenamento utente CON AUTENTICAZIONE  
+  // Ottieni sessioni di allenamento utente CON AUTENTICAZIONE  
   async getUserWorkoutPlans(userId, authClient = supabase) {
     const { data, error } = await authClient
       .from('workout_plans')
@@ -95,6 +95,9 @@ const dbHelpers = {
           reps,
           weight,
           notes,
+          recovery_seconds,
+          intensity,
+          media_url,
           order_index
         )
       `)

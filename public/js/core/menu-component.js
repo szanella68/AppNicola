@@ -71,6 +71,7 @@ const Menu = {
     // Map internal pages to actual files
     const pageMap = {
       'hub': 'app.html',
+      'sessioni': 'sessioni.html',
       'schede': 'schede.html', 
       'calendario': 'calendario.html',
       'profilo': 'profilo.html',
@@ -108,7 +109,8 @@ const Menu = {
     const path = window.location.pathname;
     let currentPage = 'hub'; // default
     
-    if (path.includes('schede.html')) currentPage = 'schede';
+    if (path.includes('sessioni.html')) currentPage = 'sessioni';
+    else if (path.includes('schede.html')) currentPage = 'schede';
     else if (path.includes('calendario.html')) currentPage = 'calendario';
     else if (path.includes('profilo.html')) currentPage = 'profilo';
     else if (path.includes('terms.html')) currentPage = 'terms';

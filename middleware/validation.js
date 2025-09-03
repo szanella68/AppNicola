@@ -130,14 +130,14 @@ const validateOnboarding = (req, res, next) => {
     validateProfile(req, res, next);
 };
 
-// Middleware per validazione scheda allenamento
+// Middleware per validazione sessione allenamento
 const validateWorkout = (req, res, next) => {
     const validation = validateWorkoutData(req.body);
 
     if (!validation.isValid) {
         return res.status(400).json(createResponse(
             false,
-            'Dati scheda non validi',
+            'Dati sessione non validi',
             null,
             validation.errors
         ));

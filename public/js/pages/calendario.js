@@ -53,6 +53,13 @@ class Calendario {
                 const dayCell = e.target.matches('.day-cell') ? e.target : e.target.closest('.day-cell');
                 this.handleDayClick(dayCell);
             }
+
+            // Event click: open details modal
+            const eventEl = e.target.closest('.day-event');
+            if (eventEl && eventEl.dataset.eventId) {
+                const eventId = eventEl.dataset.eventId;
+                this.showEventModal(eventId);
+            }
         });
 
         // Drag and drop events
@@ -86,26 +93,15 @@ class Calendario {
 
     async loadScheduledWorkouts() {
         try {
-            // TODO: Implement API endpoint for scheduled workouts
-            // For now, use mock data
-            this.scheduledWorkouts = [
-                {
-                    id: '1',
-                    workout_id: '1',
-                    date: '2025-01-20',
-                    time: '10:00',
-                    status: 'scheduled',
-                    workout: { name: 'Push Pull Legs', description: 'Upper body focus' }
-                },
-                {
-                    id: '2',
-                    workout_id: '2',
-                    date: '2025-01-22',
-                    time: '18:00',
-                    status: 'completed',
-                    workout: { name: 'Cardio Session', description: 'High intensity' }
-                }
-            ];
+            // Determine current visible range (month view by default)
+            const year = this.currentDate.getFullYear();
+            const month = this.currentDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const from = this.formatDate(firstDay);
+            const to = this.formatDate(lastDay);
+
+            this.scheduledWorkouts = await window.API.getScheduled(from, to);
         } catch (error) {
             console.error('Load scheduled workouts failed:', error);
             this.scheduledWorkouts = [];
@@ -192,8 +188,8 @@ class Calendario {
         return `
             <div class="day-event ${statusClass}" 
                  data-event-id="${event.id}"
-                 title="${event.workout.name} - ${event.time}">
-                ${event.time} ${event.workout.name}
+                 title="${event.workout?.name || ''}${event.time ? ' - ' + event.time : ''}">
+                ${event.time ? event.time + ' ' : ''}${event.workout?.name || 'Allenamento'}
             </div>
         `;
     }
@@ -263,9 +259,9 @@ class Calendario {
         if (this.workouts.length === 0) {
             container.innerHTML = `
                 <div style="text-align: center; padding: 2rem; color: #6b7280;">
-                    <p>Nessuna scheda disponibile</p>
-                    <a href="schede.html" class="btn-primary btn-sm" style="margin-top: 1rem;">
-                        Crea Prima Scheda
+                    <p>Nessuna sessione disponibile</p>
+                    <a href="sessioni.html" class="btn-primary btn-sm" style="margin-top: 1rem;">
+                        Crea Prima Sessione
                     </a>
                 </div>
             `;
@@ -453,7 +449,7 @@ class Calendario {
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Seleziona Scheda</label>
+                                <label class="form-label">Seleziona Sessione</label>
                                 <div class="workout-select">
                                     ${this.workouts.map(workout => `
                                         <div class="workout-option ${selectedWorkout?.id === workout.id ? 'selected' : ''}" 
@@ -479,7 +475,7 @@ class Calendario {
                                 Annulla
                             </button>
                             <button type="submit" class="btn-primary">
-                                Pianifica Allenamento
+                                Salva
                             </button>
                         </div>
                     </form>
@@ -508,7 +504,7 @@ class Calendario {
         const selectedWorkout = Utils.$('.workout-option.selected');
         
         if (!selectedWorkout) {
-            Utils.showError('Seleziona una scheda di allenamento');
+            Utils.showError('Seleziona una sessione di allenamento');
             return;
         }
 
@@ -521,23 +517,121 @@ class Calendario {
         };
 
         try {
-            // TODO: Implement API endpoint for scheduling workouts
-            console.log('Scheduling workout:', eventData);
-            
-            // For now, add to local array
-            const workout = this.workouts.find(w => w.id === eventData.workout_id);
-            this.scheduledWorkouts.push({
-                id: Date.now().toString(),
-                ...eventData,
-                workout: workout
-            });
-            
+            const created = await window.API.scheduleWorkout(eventData);
+            // Update local cache and UI
+            this.scheduledWorkouts.push(created);
             this.closeModal();
             this.renderCalendar();
             Utils.showSuccess('Allenamento pianificato con successo!');
         } catch (error) {
             console.error('Schedule workout failed:', error);
         }
+    }
+
+    // ===== EVENT DETAILS MODAL =====
+    showEventModal(eventId) {
+        const item = this.scheduledWorkouts.find(ev => ev.id === eventId);
+        if (!item) return;
+
+        const formattedDate = item.date;
+        const workoutName = item.workout?.name || 'Allenamento';
+
+        const modalHtml = `
+            <div class="modal" id="eventEditModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">${workoutName}</h2>
+                        <button class="modal-close" onclick="calendario.closeModal()">×</button>
+                    </div>
+                    <form id="eventEditForm" data-event-id="${item.id}">
+                        <div class="event-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Data</label>
+                                    <input type="date" name="date" class="form-input" value="${formattedDate}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Ora (opzionale)</label>
+                                    <input type="time" name="time" class="form-input" value="${item.time || ''}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Note</label>
+                                <textarea name="notes" class="form-textarea" placeholder="Note o breve log...">${item.notes || ''}</textarea>
+                            </div>
+                            <div class="form-group" style="margin-top: .5rem; color:#6b7280; font-size:.9rem;">
+                                Stato: <strong>${item.status}</strong>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" onclick="calendario.closeModal()">Annulla</button>
+                            <div style="flex:1"></div>
+                            <button type="button" class="btn-danger" id="deleteEventBtn">Elimina</button>
+                            <button type="button" class="btn-success" id="completeEventBtn">Segna completato</button>
+                            <button type="submit" class="btn-primary">Salva</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = Utils.$('#eventEditModal');
+        setTimeout(() => modal.classList.add('show'), 10);
+
+        // Bind actions
+        const form = Utils.$('#eventEditForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fd = new FormData(form);
+            try {
+                const updated = await window.API.updateScheduled(item.id, {
+                    date: fd.get('date'),
+                    time: fd.get('time') || null,
+                    notes: fd.get('notes') || null
+                });
+                // Update local item
+                const idx = this.scheduledWorkouts.findIndex(ev => ev.id === item.id);
+                if (idx >= 0) this.scheduledWorkouts[idx] = { ...this.scheduledWorkouts[idx], ...updated };
+                this.closeModal();
+                this.renderCalendar();
+                Utils.showSuccess('Evento salvato');
+            } catch (err) {
+                console.error('Update scheduled failed:', err);
+                Utils.showError('Errore salvataggio evento');
+            }
+        });
+
+        Utils.$('#deleteEventBtn').addEventListener('click', async () => {
+            if (!confirm('Eliminare questo evento pianificato?')) return;
+            try {
+                await window.API.deleteScheduled(item.id);
+                this.scheduledWorkouts = this.scheduledWorkouts.filter(ev => ev.id !== item.id);
+                this.closeModal();
+                this.renderCalendar();
+                Utils.showSuccess('Evento eliminato');
+            } catch (err) {
+                console.error('Delete scheduled failed:', err);
+                Utils.showError('Errore eliminazione evento');
+            }
+        });
+
+        Utils.$('#completeEventBtn').addEventListener('click', async () => {
+            const fd = new FormData(form);
+            const notes = fd.get('notes') || null;
+            try {
+                await window.API.completeScheduled(item.id, { notes });
+                const idx = this.scheduledWorkouts.findIndex(ev => ev.id === item.id);
+                if (idx >= 0) this.scheduledWorkouts[idx] = { ...this.scheduledWorkouts[idx], status: 'completed', notes };
+                this.closeModal();
+                this.renderCalendar();
+                Utils.showSuccess('Evento completato');
+            } catch (err) {
+                console.error('Complete scheduled failed:', err);
+                Utils.showError('Errore completamento evento');
+            }
+        });
     }
 
     closeModal() {
