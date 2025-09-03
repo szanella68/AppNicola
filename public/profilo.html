@@ -3,798 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymTracker - Il Mio Profilo</title>
+    <title>Il Mio Profilo - GymTracker</title>
     
-    <!-- CSS -->
+    <!-- Base CSS -->
     <link rel="stylesheet" href="css/menu-component.css">
     <link rel="stylesheet" href="css/shared.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            line-height: 1.6;
-            color: #1f2937;
-            background: #f9fafb;
-        }
-        
-        .main-content {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        /* Page Header */
-        .page-header {
-            margin-bottom: 2rem;
-        }
-        
-        .page-header h1 {
-            font-size: 2.5rem;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-        
-        .page-subtitle {
-            color: #6b7280;
-            font-size: 1.1rem;
-        }
-        
-        /* Profile Layout */
-        .profile-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .profile-section {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid #e5e7eb;
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid #f3f4f6;
-            padding-bottom: 1rem;
-        }
-        
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1f2937;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #374151;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
-        }
-        
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        
-        /* Buttons */
-        .primary-button {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .primary-button:hover {
-            background: #2563eb;
-        }
-        
-        .primary-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .secondary-button {
-            background: white;
-            border: 1px solid #d1d5db;
-            color: #374151;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .secondary-button:hover {
-            background: #f9fafb;
-            border-color: #9ca3af;
-        }
-        
-        .danger-button {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .danger-button:hover {
-            background: #dc2626;
-        }
-        
-        /* Stats Section */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .stat-card {
-            text-align: center;
-            padding: 1rem;
-            background: #f8fafc;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #3b82f6;
-            margin-bottom: 0.25rem;
-        }
-        
-        .stat-label {
-            color: #6b7280;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        
-        /* Achievement Badges */
-        .achievements {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-        
-        .achievement-badge {
-            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        
-        /* Full Width Sections */
-        .full-width-section {
-            grid-column: 1 / -1;
-        }
-        
-        .danger-zone {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            border-radius: 12px;
-            padding: 2rem;
-            margin-top: 2rem;
-        }
-        
-        .danger-zone-title {
-            color: #dc2626;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .danger-zone-content {
-            color: #7f1d1d;
-            margin-bottom: 1.5rem;
-        }
-        
-        /* Loading States */
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-        
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f3f4f6;
-            border-top: 2px solid #3b82f6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Success/Error Messages */
-        .message {
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            display: none;
-        }
-        
-        .message.success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-        
-        .message.error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .main-content { padding: 1rem; }
-            .page-header h1 { font-size: 2rem; }
-            .profile-layout { 
-                grid-template-columns: 1fr; 
-                gap: 1.5rem; 
-            }
-            .form-row { 
-                grid-template-columns: 1fr; 
-            }
-            .stats-grid { 
-                grid-template-columns: repeat(2, 1fr); 
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .stats-grid { 
-                grid-template-columns: 1fr; 
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/profilo.css">
 </head>
 <body>
-    <!-- Header Container (Template System) -->
+    <!-- Header will be loaded dynamically -->
     <div id="headerContainer"></div>
     
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1>👤 Il Mio Profilo</h1>
-            <p class="page-subtitle">Gestisci le tue informazioni personali e le preferenze dell'account</p>
-        </div>
-        
-        <!-- Profile Layout -->
-        <div class="profile-layout">
-            <!-- Personal Information -->
-            <div class="profile-section">
-                <div class="section-header">
+    <!-- Main content area -->
+    <main id="mainContent" class="main-content">
+        <div class="profilo-container">
+            <!-- Page Header -->
+            <div class="profilo-header">
+                <h1 class="profilo-title">👤 Il Mio Profilo</h1>
+                <p class="profilo-subtitle">Gestisci le tue informazioni personali e le impostazioni</p>
+            </div>
+
+            <!-- Profile Sections -->
+            <div class="profile-sections">
+                <!-- User Information Section -->
+                <div class="profile-section">
                     <h2 class="section-title">
-                        📋 Informazioni Personali
+                        <span class="section-icon">📝</span>
+                        Informazioni Personali
                     </h2>
+                    <div id="userInfo">
+                        <!-- User info will be loaded here -->
+                    </div>
                 </div>
-                
-                <div id="personalMessage" class="message"></div>
-                
-                <form id="personalInfoForm">
-                    <div class="form-group">
-                        <label for="fullName">Nome Completo</label>
-                        <input type="text" id="fullName" placeholder="Mario Rossi" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="mario@esempio.com" required>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="age">Età</label>
-                            <input type="number" id="age" min="13" max="120" placeholder="25">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="weight">Peso (kg)</label>
-                            <input type="number" id="weight" min="30" max="300" step="0.1" placeholder="70">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="height">Altezza (cm)</label>
-                            <input type="number" id="height" min="100" max="250" placeholder="175">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="fitnessLevel">Livello Fitness</label>
-                            <select id="fitnessLevel">
-                                <option value="">Seleziona livello</option>
-                                <option value="beginner">Principiante</option>
-                                <option value="intermediate">Intermedio</option>
-                                <option value="advanced">Avanzato</option>
-                                <option value="expert">Esperto</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="goals">Obiettivi Fitness</label>
-                        <textarea id="goals" placeholder="Descrivi i tuoi obiettivi di fitness e salute..."></textarea>
-                    </div>
-                    
-                    <button type="submit" class="primary-button" id="savePersonalInfo">
-                        💾 Salva Modifiche
-                    </button>
-                </form>
-            </div>
-            
-            <!-- Statistics & Achievements -->
-            <div class="profile-section">
-                <div class="section-header">
+
+                <!-- Statistics Section -->
+                <div class="profile-section">
                     <h2 class="section-title">
-                        📊 Statistiche & Progressi
+                        <span class="section-icon">📊</span>
+                        Statistiche e Traguardi
                     </h2>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" id="statSchede">0</div>
-                        <div class="stat-label">Schede Create</div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-number" id="statWorkouts">0</div>
-                        <div class="stat-label">Allenamenti</div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-number" id="statDays">0</div>
-                        <div class="stat-label">Giorni Attivo</div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-number" id="statStreak">0</div>
-                        <div class="stat-label">Serie Attuale</div>
+                    <div id="statsSection">
+                        <!-- Stats will be loaded here -->
                     </div>
                 </div>
-                
-                <h3 style="margin-bottom: 1rem; color: #374151;">🏆 Achievement</h3>
-                <div class="achievements" id="achievementsList">
-                    <span class="achievement-badge">🎯 Primo Allenamento</span>
-                    <span class="achievement-badge">💪 Una Settimana</span>
-                    <span class="achievement-badge">🔥 Streak 7 giorni</span>
-                </div>
-                
-                <div style="margin-top: 2rem;">
-                    <h4 style="margin-bottom: 0.5rem; color: #374151;">📈 Andamento Settimanale</h4>
-                    <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; text-align: center; color: #6b7280;">
-                        Grafico allenamenti in sviluppo
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Account Security -->
-            <div class="profile-section">
-                <div class="section-header">
+
+                <!-- Settings Section -->
+                <div class="profile-section full-width-section">
                     <h2 class="section-title">
-                        🔒 Sicurezza Account
+                        <span class="section-icon">⚙️</span>
+                        Impostazioni Account
                     </h2>
-                </div>
-                
-                <div id="securityMessage" class="message"></div>
-                
-                <form id="passwordForm">
-                    <div class="form-group">
-                        <label for="currentPassword">Password Attuale</label>
-                        <input type="password" id="currentPassword" placeholder="••••••••" required>
+                    <div id="settingsSection">
+                        <!-- Settings will be loaded here -->
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="newPassword">Nuova Password</label>
-                        <input type="password" id="newPassword" placeholder="••••••••" minlength="6" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="confirmPassword">Conferma Password</label>
-                        <input type="password" id="confirmPassword" placeholder="••••••••" minlength="6" required>
-                    </div>
-                    
-                    <button type="submit" class="secondary-button" id="changePasswordBtn">
-                        🔄 Cambia Password
-                    </button>
-                </form>
-                
-                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e5e7eb;">
-                    <h4 style="margin-bottom: 1rem; color: #374151;">📧 Gestione Email</h4>
-                    <p style="color: #6b7280; margin-bottom: 1rem; font-size: 0.9rem;">
-                        Ricevi notifiche e aggiornamenti via email
-                    </p>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                        <input type="checkbox" id="emailNotifications" checked>
-                        <span>Notifiche email attive</span>
-                    </label>
                 </div>
-            </div>
-            
-            <!-- App Preferences -->
-            <div class="profile-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        ⚙️ Preferenze App
-                    </h2>
-                </div>
-                
-                <div class="form-group">
-                    <label for="theme">Tema Interfaccia</label>
-                    <select id="theme">
-                        <option value="light">🌞 Chiaro</option>
-                        <option value="dark">🌙 Scuro</option>
-                        <option value="auto">🔄 Automatico</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="units">Unità di Misura</label>
-                    <select id="units">
-                        <option value="metric">Metrico (kg, cm)</option>
-                        <option value="imperial">Imperiale (lbs, ft)</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="weekStart">Inizio Settimana</label>
-                    <select id="weekStart">
-                        <option value="monday">Lunedì</option>
-                        <option value="sunday">Domenica</option>
-                    </select>
-                </div>
-                
-                <button type="button" class="primary-button" onclick="Profile.savePreferences()">
-                    💾 Salva Preferenze
-                </button>
-            </div>
-        </div>
-        
-        <!-- Danger Zone -->
-        <div class="danger-zone">
-            <h2 class="danger-zone-title">
-                ⚠️ Zona Pericolosa
-            </h2>
-            <div class="danger-zone-content">
-                <p><strong>Elimina Account:</strong> Questa azione è irreversibile. Tutti i tuoi dati, schede di allenamento e progressi verranno eliminati permanentemente.</p>
-                <p>Se sei sicuro di voler procedere, digita la tua password per confermare.</p>
-            </div>
-            
-            <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                <input type="password" id="deletePassword" placeholder="Password per conferma" style="flex: 1; min-width: 200px;">
-                <button type="button" class="danger-button" onclick="Profile.showDeleteConfirm()" id="deleteAccountBtn">
-                    🗑️ Elimina Account
-                </button>
             </div>
         </div>
     </main>
-
-    <!-- Footer Container (Template System) -->
+    
+    <!-- Footer will be loaded dynamically -->
     <div id="footerContainer"></div>
-
-    <!-- JavaScript -->
+    
+    <!-- Core JavaScript -->
     <script src="js/core/template-loader.js"></script>
     <script src="js/core/menu-component.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="js/core/auth.js"></script>
+    <script src="js/core/api.js"></script>
+    <script src="js/core/utils.js"></script>
+    <script src="js/pages/profilo.js"></script>
     
-    <!-- Page-specific Logic -->
+    <!-- Page initialization -->
     <script>
-        const Profile = {
-            currentUser: null,
-            isLoading: false,
-            
-            init() {
-                console.log('👤 Initializing Profile page...');
-                this.currentUser = Auth.getCurrentUser();
-                this.loadProfile();
-                this.loadStats();
-                this.bindEvents();
-            },
-            
-            bindEvents() {
-                // Personal info form
-                document.getElementById('personalInfoForm').addEventListener('submit', this.savePersonalInfo.bind(this));
-                
-                // Password form
-                document.getElementById('passwordForm').addEventListener('submit', this.changePassword.bind(this));
-                
-                // Email notifications toggle
-                document.getElementById('emailNotifications').addEventListener('change', this.toggleEmailNotifications.bind(this));
-            },
-            
-            loadProfile() {
-                if (!this.currentUser) return;
-                
-                // Load user data into form
-                document.getElementById('fullName').value = this.currentUser.name || '';
-                document.getElementById('email').value = this.currentUser.email || '';
-                
-                // Mock additional data
-                document.getElementById('age').value = '28';
-                document.getElementById('weight').value = '75';
-                document.getElementById('height').value = '178';
-                document.getElementById('fitnessLevel').value = 'intermediate';
-                document.getElementById('goals').value = 'Aumentare massa muscolare e migliorare la resistenza cardiovascolare';
-            },
-            
-            loadStats() {
-                // Mock stats data
-                const stats = {
-                    schede: Math.floor(Math.random() * 10) + 3,
-                    workouts: Math.floor(Math.random() * 50) + 15,
-                    days: Math.floor(Math.random() * 100) + 30,
-                    streak: Math.floor(Math.random() * 14) + 1
-                };
-                
-                document.getElementById('statSchede').textContent = stats.schede;
-                document.getElementById('statWorkouts').textContent = stats.workouts;
-                document.getElementById('statDays').textContent = stats.days;
-                document.getElementById('statStreak').textContent = stats.streak;
-            },
-            
-            async savePersonalInfo(event) {
-                event.preventDefault();
-                
-                const button = document.getElementById('savePersonalInfo');
-                const originalText = button.innerHTML;
-                
-                this.showLoading(button, 'Salvando...');
-                this.showMessage('personalMessage', '', 'hide');
-                
-                try {
-                    const formData = {
-                        fullName: document.getElementById('fullName').value,
-                        email: document.getElementById('email').value,
-                        age: document.getElementById('age').value,
-                        weight: document.getElementById('weight').value,
-                        height: document.getElementById('height').value,
-                        fitnessLevel: document.getElementById('fitnessLevel').value,
-                        goals: document.getElementById('goals').value
-                    };
-                    
-                    // Simulate API call
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-                    
-                    console.log('Saving profile:', formData);
-                    
-                    this.showMessage('personalMessage', '✅ Profilo aggiornato con successo!', 'success');
-                    
-                } catch (error) {
-                    console.error('Error saving profile:', error);
-                    this.showMessage('personalMessage', '❌ Errore nel salvare il profilo. Riprova.', 'error');
-                } finally {
-                    this.hideLoading(button, originalText);
+        // Define page initialization function for TemplateLoader
+        window.PageInit = async function() {
+            try {
+                // Initialize page-specific functionality
+                await initPage();
+                console.log('✅ Profile page initialized');
+            } catch (error) {
+                console.error('❌ Profile page initialization error:', error);
+                if (window.Utils && Utils.showError) {
+                    Utils.showError('Errore nel caricamento della pagina');
                 }
-            },
-            
-            async changePassword(event) {
-                event.preventDefault();
-                
-                const currentPassword = document.getElementById('currentPassword').value;
-                const newPassword = document.getElementById('newPassword').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
-                
-                // Validation
-                if (newPassword !== confirmPassword) {
-                    this.showMessage('securityMessage', '❌ Le password non coincidono', 'error');
-                    return;
-                }
-                
-                if (newPassword.length < 6) {
-                    this.showMessage('securityMessage', '❌ La password deve essere di almeno 6 caratteri', 'error');
-                    return;
-                }
-                
-                const button = document.getElementById('changePasswordBtn');
-                const originalText = button.innerHTML;
-                
-                this.showLoading(button, 'Cambiando...');
-                this.showMessage('securityMessage', '', 'hide');
-                
-                try {
-                    // Simulate API call
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    
-                    console.log('Changing password');
-                    
-                    // Clear form
-                    document.getElementById('passwordForm').reset();
-                    
-                    this.showMessage('securityMessage', '✅ Password cambiata con successo!', 'success');
-                    
-                } catch (error) {
-                    console.error('Error changing password:', error);
-                    this.showMessage('securityMessage', '❌ Errore nel cambiare la password. Verifica quella attuale.', 'error');
-                } finally {
-                    this.hideLoading(button, originalText);
-                }
-            },
-            
-            async toggleEmailNotifications(event) {
-                const enabled = event.target.checked;
-                console.log('Email notifications:', enabled ? 'enabled' : 'disabled');
-                
-                // Show toast
-                this.showToast(enabled ? '✅ Notifiche email attivate' : '⚠️ Notifiche email disattivate');
-            },
-            
-            async savePreferences() {
-                const preferences = {
-                    theme: document.getElementById('theme').value,
-                    units: document.getElementById('units').value,
-                    weekStart: document.getElementById('weekStart').value
-                };
-                
-                console.log('Saving preferences:', preferences);
-                
-                // Apply theme immediately (mock)
-                if (preferences.theme === 'dark') {
-                    document.body.style.filter = 'invert(0.05)';
-                } else {
-                    document.body.style.filter = 'none';
-                }
-                
-                this.showToast('✅ Preferenze salvate con successo!');
-            },
-            
-            showDeleteConfirm() {
-                const password = document.getElementById('deletePassword').value;
-                
-                if (!password) {
-                    alert('Inserisci la tua password per confermare');
-                    return;
-                }
-                
-                const confirmed = confirm(
-                    '⚠️ ATTENZIONE!\n\n' +
-                    'Stai per eliminare DEFINITIVAMENTE il tuo account.\n' +
-                    'Tutti i dati, schede e progressi verranno persi per sempre.\n\n' +
-                    'Questa azione NON è reversibile.\n\n' +
-                    'Sei ASSOLUTAMENTE sicuro di voler procedere?'
-                );
-                
-                if (confirmed) {
-                    this.deleteAccount(password);
-                }
-            },
-            
-            async deleteAccount(password) {
-                const button = document.getElementById('deleteAccountBtn');
-                const originalText = button.innerHTML;
-                
-                this.showLoading(button, 'Eliminando...');
-                
-                try {
-                    // Simulate API call
-                    await new Promise(resolve => setTimeout(resolve, 3000));
-                    
-                    alert('🗑️ Account eliminato con successo.\nSarai reindirizzato alla home page.');
-                    
-                    // Logout and redirect
-                    Auth.logout();
-                    
-                } catch (error) {
-                    console.error('Error deleting account:', error);
-                    alert('❌ Errore nell\'eliminazione dell\'account. Riprova più tardi.');
-                } finally {
-                    this.hideLoading(button, originalText);
-                }
-            },
-            
-            showLoading(button, text) {
-                button.disabled = true;
-                button.innerHTML = `<span class="spinner"></span> ${text}`;
-            },
-            
-            hideLoading(button, originalText) {
-                button.disabled = false;
-                button.innerHTML = originalText;
-            },
-            
-            showMessage(containerId, message, type) {
-                const container = document.getElementById(containerId);
-                
-                if (type === 'hide') {
-                    container.style.display = 'none';
-                    return;
-                }
-                
-                container.className = `message ${type}`;
-                container.textContent = message;
-                container.style.display = 'block';
-                
-                // Auto hide after 5 seconds for success messages
-                if (type === 'success') {
-                    setTimeout(() => {
-                        container.style.display = 'none';
-                    }, 5000);
-                }
-            },
-            
-            showToast(message) {
-                const toast = document.createElement('div');
-                toast.style.cssText = `
-                    position: fixed; top: 20px; right: 20px; background: #10b981; color: white;
-                    padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                    z-index: 3000; animation: slideIn 0.3s ease;
-                `;
-                toast.textContent = message;
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 3000);
             }
-        };
-        
-        // Page initialization
-        window.PageInit = function() {
-            // Check auth first
-            if (!Auth.isAuthenticated()) {
-                window.location.href = 'home.html';
-                return;
-            }
-            
-            // Initialize Profile page
-            Profile.init();
         };
     </script>
 </body>

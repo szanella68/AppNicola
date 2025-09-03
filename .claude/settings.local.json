@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "Bash(taskkill:*)",
+      "Bash(./stop_server.bat)",
+      "Bash(npm start)",
+      "Bash(findstr:*)",
+      "Bash(dir:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -360,13 +360,19 @@ const Auth = {
         const user = JSON.parse(stored);
         this.currentUser = user;
         
+        console.log('✅ Auth restored from localStorage:', user);
+        
         // Update menu if it exists
         if (window.Menu) {
           Menu.showPrivateMenu(user);
+          console.log('✅ Private menu activated for:', user.name);
         }
       } catch (e) {
+        console.error('❌ Failed to parse stored user:', e);
         localStorage.removeItem('gymtracker_user');
       }
+    } else {
+      console.log('ℹ️ No stored user found');
     }
   },
   
@@ -411,8 +417,25 @@ const Auth = {
     return this.currentUser;
   },
   
-  // Check if authenticated
+  // Check if authenticated - fallback to localStorage if currentUser is null
   isAuthenticated() {
-    return this.currentUser !== null;
+    if (this.currentUser !== null) {
+      return true;
+    }
+    
+    // Fallback: check localStorage directly
+    const stored = localStorage.getItem('gymtracker_user');
+    if (stored) {
+      try {
+        const user = JSON.parse(stored);
+        this.currentUser = user; // Restore user if found
+        return true;
+      } catch (e) {
+        localStorage.removeItem('gymtracker_user');
+        return false;
+      }
+    }
+    
+    return false;
   }
 };

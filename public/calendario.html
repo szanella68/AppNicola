@@ -3,202 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymTracker - Calendario</title>
+    <title>Calendario - GymTracker</title>
     
-    <!-- CSS -->
+    <!-- Base CSS -->
     <link rel="stylesheet" href="css/menu-component.css">
     <link rel="stylesheet" href="css/shared.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            line-height: 1.6;
-            color: #1f2937;
-            background: #f9fafb;
-        }
-        
-        .main-content {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .page-header {
-            margin-bottom: 3rem;
-            text-align: center;
-        }
-        
-        .page-header h1 {
-            font-size: 2.5rem;
-            color: #1f2937;
-            margin-bottom: 1rem;
-        }
-        
-        .page-subtitle {
-            color: #6b7280;
-            font-size: 1.1rem;
-        }
-        
-        .placeholder-content {
-            background: white;
-            border-radius: 12px;
-            padding: 4rem 2rem;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid #e5e7eb;
-        }
-        
-        .placeholder-icon {
-            font-size: 5rem;
-            margin-bottom: 2rem;
-            opacity: 0.5;
-        }
-        
-        .placeholder-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #374151;
-            margin-bottom: 1rem;
-        }
-        
-        .placeholder-description {
-            color: #6b7280;
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto 2rem;
-            line-height: 1.6;
-        }
-        
-        .feature-preview {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-        
-        .feature-card {
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 1.5rem;
-            border: 1px solid #e5e7eb;
-        }
-        
-        .feature-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-        
-        .feature-title {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #374151;
-        }
-        
-        .feature-description {
-            color: #6b7280;
-            font-size: 0.9rem;
-        }
-        
-        .coming-soon-badge {
-            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            display: inline-block;
-            margin-top: 1rem;
-        }
-        
-        @media (max-width: 768px) {
-            .main-content { padding: 1rem; }
-            .page-header h1 { font-size: 2rem; }
-            .placeholder-content { padding: 3rem 1.5rem; }
-            .placeholder-icon { font-size: 4rem; }
-            .feature-preview { grid-template-columns: 1fr; }
-        }
-    </style>
+    <link rel="stylesheet" href="css/calendario.css">
 </head>
 <body>
-    <!-- Header Container (Template System) -->
+    <!-- Header will be loaded dynamically -->
     <div id="headerContainer"></div>
     
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1>📅 Calendario Allenamenti</h1>
-            <p class="page-subtitle">Pianifica e organizza i tuoi allenamenti settimanali</p>
-        </div>
-        
-        <!-- Placeholder Content -->
-        <div class="placeholder-content">
-            <div class="placeholder-icon">📅</div>
-            <h2 class="placeholder-title">Calendario in Sviluppo</h2>
-            <p class="placeholder-description">
-                Il calendario degli allenamenti è attualmente in fase di sviluppo. 
-                Presto potrai pianificare i tuoi workout, visualizzare la programmazione settimanale 
-                e tenere traccia della tua costanza negli allenamenti.
-            </p>
-            
-            <div class="coming-soon-badge">🚀 Coming Soon</div>
-            
-            <!-- Feature Preview -->
-            <div class="feature-preview">
-                <div class="feature-card">
-                    <div class="feature-icon">🗓️</div>
-                    <div class="feature-title">Vista Settimanale</div>
-                    <div class="feature-description">
-                        Visualizza i tuoi allenamenti organizzati per giorno della settimana
+    <!-- Main content area -->
+    <main id="mainContent" class="main-content">
+        <div class="calendario-container">
+            <!-- Page Header -->
+            <div class="calendario-header">
+                <div>
+                    <h1 class="calendario-title">📅 Calendario Allenamenti</h1>
+                    <p class="calendario-subtitle">Pianifica i tuoi allenamenti settimanali</p>
+                </div>
+                <div class="calendar-controls">
+                    <div class="calendar-nav">
+                        <button class="nav-btn" id="prevMonth">←</button>
+                        <span class="current-month" id="currentMonth">Gennaio 2025</span>
+                        <button class="nav-btn" id="nextMonth">→</button>
+                    </div>
+                    <button class="btn-secondary" id="todayBtn">Oggi</button>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="month">Mese</button>
+                        <button class="view-btn" data-view="week">Settimana</button>
                     </div>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">⏰</div>
-                    <div class="feature-title">Promemoria</div>
-                    <div class="feature-description">
-                        Ricevi notifiche per i tuoi allenamenti programmati
+            </div>
+
+            <!-- Calendar Main Layout -->
+            <div class="calendar-main">
+                <!-- Sidebar -->
+                <div class="calendar-sidebar">
+                    <!-- Available Workouts -->
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">📋 Le Tue Schede</h3>
+                        <div id="workoutsList" class="workouts-list">
+                            <!-- Workouts will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Legenda</h3>
+                        <div class="legend">
+                            <div class="legend-item">
+                                <div class="legend-color scheduled"></div>
+                                <span>Pianificato</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color completed"></div>
+                                <span>Completato</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color missed"></div>
+                                <span>Perso</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <div class="feature-title">Statistiche</div>
-                    <div class="feature-description">
-                        Monitora la costanza e i progressi nel tempo
+
+                <!-- Calendar Content -->
+                <div class="calendar-content">
+                    <!-- Monthly View -->
+                    <div id="monthView" class="calendar-view active">
+                        <!-- Calendar will be rendered here -->
                     </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <div class="feature-title">Obiettivi</div>
-                    <div class="feature-description">
-                        Imposta e raggiungi i tuoi obiettivi di allenamento
+
+                    <!-- Weekly View -->
+                    <div id="weekView" class="calendar-view">
+                        <!-- Weekly calendar will be rendered here -->
                     </div>
                 </div>
             </div>
         </div>
     </main>
-
-    <!-- Footer Container (Template System) -->
+    
+    <!-- Footer will be loaded dynamically -->
     <div id="footerContainer"></div>
-
-    <!-- JavaScript -->
+    
+    <!-- Core JavaScript -->
     <script src="js/core/template-loader.js"></script>
     <script src="js/core/menu-component.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="js/core/auth.js"></script>
+    <script src="js/core/api.js"></script>
+    <script src="js/core/utils.js"></script>
+    <script src="js/pages/calendario.js"></script>
     
     <!-- Page initialization -->
     <script>
-        window.PageInit = function() {
-            // Check auth first
-            if (!Auth.isAuthenticated()) {
-                window.location.href = 'home.html';
-                return;
+        // Define page initialization function for TemplateLoader
+        window.PageInit = async function() {
+            try {
+                // Initialize page-specific functionality
+                await initPage();
+                console.log('✅ Calendar page initialized');
+            } catch (error) {
+                console.error('❌ Calendar page initialization error:', error);
+                if (window.Utils && Utils.showError) {
+                    Utils.showError('Errore nel caricamento della pagina');
+                }
             }
-            
-            console.log('📅 Calendario page loaded (placeholder)');
         };
     </script>
 </body>

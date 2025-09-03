@@ -82,15 +82,13 @@ app.get('/api/config/public', (req, res) => {
 /* ======== /CONFIG PUBBLICA ======== */
 
 // Route principale per servire l'app
-// Route principale per servire l'app
-// Route principale per servire l'app
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.redirect('/home.html');
 });
 
-// Catch all per SPA routing
+// Catch all per SPA routing (solo per percorsi non esistenti)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.status(404).sendFile(path.join(__dirname, 'public', 'home.html'));
 });
 
 // Error handling middleware

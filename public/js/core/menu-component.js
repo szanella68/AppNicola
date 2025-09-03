@@ -11,6 +11,11 @@ const Menu = {
     this.checkAuthState();
     this.updateActiveState();
   },
+
+  // Force refresh menu state (useful after page navigation)
+  refreshAuthState() {
+    this.checkAuthState();
+  },
   
   // Bind global events
   bindEvents() {

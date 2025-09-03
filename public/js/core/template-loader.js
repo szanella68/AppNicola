@@ -82,6 +82,10 @@ const TemplateLoader = {
       // Initialize core systems after templates are loaded
       if (window.Menu && typeof Menu.init === 'function') {
         Menu.init();
+        // Force refresh auth state to ensure proper menu display
+        if (typeof Menu.refreshAuthState === 'function') {
+          Menu.refreshAuthState();
+        }
         console.log('✅ Menu system initialized');
       }
       

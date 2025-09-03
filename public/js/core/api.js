@@ -1,0 +1,349 @@
+// Supabase API Integration for GymTracker
+// Handles all backend API calls with proper error handling and user feedback
+
+class API {
+    constructor() {
+        // Dynamic base URL detection for development vs production
+        const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+        this.baseURL = isLocalhost ? '/api' : '/nicola/api';
+        
+        console.log(`[API] Hostname: ${window.location.hostname}, BaseURL: ${this.baseURL}`);
+        
+        this.supabase = null;
+        this.initialized = false;
+    }
+
+    // Initialize Supabase client
+    async init() {
+        if (this.initialized) return;
+        
+        try {
+            // Get public config from server
+            const response = await fetch(`${this.baseURL}/config/public`);
+            if (!response.ok) throw new Error('Failed to get config');
+            
+            const config = await response.json();
+            
+            // Initialize Supabase client (if available globally)
+            if (typeof createClient !== 'undefined') {
+                this.supabase = createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
+            }
+            
+            this.initialized = true;
+        } catch (error) {
+            console.error('API initialization failed:', error);
+            throw error;
+        }
+    }
+
+    // Get current user session token
+    getAuthToken() {
+        const session = Auth.getSession();
+        return session?.access_token;
+    }
+
+    // Generic API request handler
+    async request(endpoint, options = {}) {
+        try {
+            const token = this.getAuthToken();
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token && { 'Authorization': `Bearer ${token}` })
+                }
+            };
+
+            const requestOptions = {
+                ...defaultOptions,
+                ...options,
+                headers: { ...defaultOptions.headers, ...options.headers }
+            };
+
+            const response = await fetch(`${this.baseURL}${endpoint}`, requestOptions);
+            
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Request failed' }));
+                throw new Error(errorData.error || `HTTP ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`API request failed [${endpoint}]:`, error);
+            await this.handleAPIError(error);
+            throw error;
+        }
+    }
+
+    // AUTH MANAGEMENT
+    async login(email, password) {
+        try {
+            const response = await this.request('/auth/signin', {
+                method: 'POST',
+                body: JSON.stringify({ email, password })
+            });
+            
+            if (response.session) {
+                Auth.setSession(response.session);
+                Utils.showSuccess('Login effettuato con successo!');
+                return response;
+            }
+            
+            throw new Error('Login failed - no session');
+        } catch (error) {
+            Utils.showError(`Errore login: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async register(email, password, userData = {}) {
+        try {
+            const response = await this.request('/auth/signup', {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    email, 
+                    password, 
+                    fullName: userData.fullName || '' 
+                })
+            });
+            
+            if (response.needsConfirmation) {
+                Utils.showInfo('Controlla la tua email per confermare l\'account');
+                return response;
+            }
+            
+            if (response.session) {
+                Auth.setSession(response.session);
+                Utils.showSuccess('Registrazione completata con successo!');
+                return response;
+            }
+            
+            return response;
+        } catch (error) {
+            Utils.showError(`Errore registrazione: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async logout() {
+        try {
+            await this.request('/auth/signout', { method: 'POST' });
+            Auth.clearSession();
+            Utils.showSuccess('Logout effettuato con successo');
+        } catch (error) {
+            console.error('Logout error:', error);
+            // Clear local session even if server request fails
+            Auth.clearSession();
+        }
+    }
+
+    async getCurrentUser() {
+        try {
+            return await this.request('/auth/user');
+        } catch (error) {
+            console.error('Get current user failed:', error);
+            throw error;
+        }
+    }
+
+    async refreshSession() {
+        try {
+            const session = Auth.getSession();
+            if (!session?.refresh_token) throw new Error('No refresh token');
+            
+            const response = await this.request('/auth/refresh', {
+                method: 'POST',
+                body: JSON.stringify({ refresh_token: session.refresh_token })
+            });
+            
+            if (response.session) {
+                Auth.setSession(response.session);
+                return response.session;
+            }
+            
+            throw new Error('Session refresh failed');
+        } catch (error) {
+            console.error('Session refresh failed:', error);
+            Auth.clearSession();
+            throw error;
+        }
+    }
+
+    // WORKOUT MANAGEMENT
+    async getWorkouts() {
+        try {
+            const response = await this.request('/workouts');
+            return response.workouts || [];
+        } catch (error) {
+            Utils.showError('Errore nel caricamento delle schede');
+            throw error;
+        }
+    }
+
+    async createWorkout(workoutData) {
+        try {
+            const response = await this.request('/workouts', {
+                method: 'POST',
+                body: JSON.stringify(workoutData)
+            });
+            
+            Utils.showSuccess(`Scheda "${workoutData.name}" creata con successo!`);
+            return response;
+        } catch (error) {
+            Utils.showError(`Errore nella creazione della scheda: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async updateWorkout(id, workoutData) {
+        try {
+            const response = await this.request(`/workouts/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(workoutData)
+            });
+            
+            Utils.showSuccess('Scheda aggiornata con successo!');
+            return response;
+        } catch (error) {
+            Utils.showError(`Errore nell'aggiornamento della scheda: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async deleteWorkout(id) {
+        try {
+            await this.request(`/workouts/${id}`, { method: 'DELETE' });
+            Utils.showSuccess('Scheda eliminata con successo!');
+        } catch (error) {
+            Utils.showError(`Errore nell'eliminazione della scheda: ${error.message}`);
+            throw error;
+        }
+    }
+
+    // EXERCISE MANAGEMENT
+    async addExercise(workoutId, exerciseData) {
+        try {
+            const response = await this.request(`/workouts/${workoutId}/exercises`, {
+                method: 'POST',
+                body: JSON.stringify(exerciseData)
+            });
+            
+            Utils.showSuccess(`Esercizio "${exerciseData.name}" aggiunto!`);
+            return response;
+        } catch (error) {
+            Utils.showError(`Errore nell'aggiunta dell'esercizio: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async updateExercise(workoutId, exerciseId, exerciseData) {
+        try {
+            const response = await this.request(`/workouts/${workoutId}/exercises/${exerciseId}`, {
+                method: 'PUT',
+                body: JSON.stringify(exerciseData)
+            });
+            
+            Utils.showSuccess('Esercizio aggiornato!');
+            return response;
+        } catch (error) {
+            Utils.showError(`Errore nell'aggiornamento dell'esercizio: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async removeExercise(workoutId, exerciseId) {
+        try {
+            await this.request(`/workouts/${workoutId}/exercises/${exerciseId}`, {
+                method: 'DELETE'
+            });
+            
+            Utils.showSuccess('Esercizio rimosso!');
+        } catch (error) {
+            Utils.showError(`Errore nella rimozione dell'esercizio: ${error.message}`);
+            throw error;
+        }
+    }
+
+    // PROFILE MANAGEMENT
+    async getProfile() {
+        try {
+            const response = await this.request('/profile');
+            return response.profile;
+        } catch (error) {
+            Utils.showError('Errore nel caricamento del profilo');
+            throw error;
+        }
+    }
+
+    async updateProfile(profileData) {
+        try {
+            const response = await this.request('/profile', {
+                method: 'PUT',
+                body: JSON.stringify(profileData)
+            });
+            
+            Utils.showSuccess('Profilo aggiornato con successo!');
+            return response;
+        } catch (error) {
+            Utils.showError(`Errore nell'aggiornamento del profilo: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async getUserStats() {
+        try {
+            const response = await this.request('/profile/stats');
+            return response.stats;
+        } catch (error) {
+            console.error('Get user stats failed:', error);
+            return null; // Non-critical, don't show error to user
+        }
+    }
+
+    // ERROR HANDLING
+    async handleAPIError(error) {
+        // Handle specific error cases
+        if (error.message.includes('401') || error.message.includes('unauthorized')) {
+            // Token expired, try refresh
+            try {
+                await this.refreshSession();
+                Utils.showInfo('Sessione rinnovata, riprova l\'operazione');
+            } catch (refreshError) {
+                Utils.showError('Sessione scaduta, effettua nuovamente il login');
+                Auth.logout();
+            }
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+            Utils.showError('Errore di connessione. Controlla la tua connessione internet.');
+        } else if (error.message.includes('400')) {
+            Utils.showError('Dati non validi. Controlla i campi inseriti.');
+        } else if (error.message.includes('500')) {
+            Utils.showError('Errore del server. Riprova più tardi.');
+        }
+    }
+
+    // HEALTH CHECK
+    async healthCheck() {
+        try {
+            const response = await fetch(`${this.baseURL}/health`);
+            if (!response.ok) throw new Error('Health check failed');
+            return await response.json();
+        } catch (error) {
+            console.error('Health check failed:', error);
+            return null;
+        }
+    }
+}
+
+// Create global API instance
+const api = new API();
+
+// Auto-initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await api.init();
+    } catch (error) {
+        console.error('API initialization failed:', error);
+    }
+});
+
+// Export for use in other modules
+window.API = api;
