@@ -84,7 +84,9 @@ class Calendario {
     // ===== DATA LOADING =====
     async loadWorkouts() {
         try {
-            this.workouts = await window.API.getWorkouts();
+            const all = await window.API.getWorkouts();
+            // Mostra solo le sessioni attive dell'utente loggato
+            this.workouts = (all || []).filter(w => w.is_active !== false);
         } catch (error) {
             console.error('Load workouts failed:', error);
             this.workouts = [];
@@ -259,10 +261,8 @@ class Calendario {
         if (this.workouts.length === 0) {
             container.innerHTML = `
                 <div style="text-align: center; padding: 2rem; color: #6b7280;">
-                    <p>Nessuna sessione disponibile</p>
-                    <a href="sessioni.html" class="btn-primary btn-sm" style="margin-top: 1rem;">
-                        Crea Prima Sessione
-                    </a>
+                    <p>Nessuna sessione attiva disponibile</p>
+                    <p style="font-size:.9rem;">Crea o attiva una sessione dalla pagina "Le Mie Sessioni"</p>
                 </div>
             `;
             return;

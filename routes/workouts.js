@@ -1,5 +1,5 @@
 const express = require('express');
-const { authenticateUser, dbHelpers, supabase } = require('../config/supabase');
+const { authenticateUser, dbHelpers, supabase, supabaseAdmin } = require('../config/supabase');
 const router = express.Router();
 
 // GET /api/workouts - Ottieni tutte le sessioni di allenamento dell'utente
@@ -81,7 +81,7 @@ router.get('/:id', authenticateUser, async (req, res) => {
 router.post('/', authenticateUser, async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, description, exercises } = req.body;
+    const { name, description, exercises, scheda_id: bodySchedaId } = req.body;
 
     console.log('🔍 User ID:', userId); // Debug
     console.log('🔍 Request body:', { name, description, exercises: exercises?.length }); // Debug
@@ -95,10 +95,57 @@ router.post('/', authenticateUser, async (req, res) => {
       return res.status(400).json({ error: 'Il nome della scheda non può superare i 100 caratteri' });
     }
 
-    // Crea la scheda
+    // Determina la scheda di appartenenza (obbligatoria in DB)
+    let schedaId = (bodySchedaId && String(bodySchedaId).trim()) || null;
+
+    // Se non è stata passata, prova a recuperare/creare una scheda personale
+    if (!schedaId) {
+      try {
+        // 1) prova a cercare una scheda 'Personale' dell'utente via client autenticato (RLS)
+        const { data: found } = await req.supabaseAuth
+          .from('schede')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('titolo', 'Personale')
+          .eq('cancellata', false)
+          .limit(1)
+          .maybeSingle();
+        if (found?.id) schedaId = found.id;
+      } catch (_) { /* ignore */ }
+
+      if (!schedaId) {
+        try {
+          // 2) prova a crearla come utente (se le policy lo consentono)
+          const { data: created, error: createErr } = await req.supabaseAuth
+            .from('schede')
+            .insert({ user_id: userId, titolo: 'Personale', descrizione: null, attiva: true, cancellata: false })
+            .select('id')
+            .single();
+          if (created?.id) schedaId = created.id;
+          if (createErr) throw createErr;
+        } catch (_) {
+          // 3) fallback: se disponibile, crea con service role
+          if (supabaseAdmin) {
+            const { data: createdAdmin } = await supabaseAdmin
+              .from('schede')
+              .insert({ user_id: userId, titolo: 'Personale', descrizione: null, attiva: true, cancellata: false })
+              .select('id')
+              .single();
+            if (createdAdmin?.id) schedaId = createdAdmin.id;
+          }
+        }
+      }
+    }
+
+    if (!schedaId) {
+      return res.status(400).json({ error: 'Scheda non specificata. Crea o seleziona una scheda prima di creare una sessione.' });
+    }
+
+    // Crea la sessione (workout plan) legandola alla scheda
     const planData = {
       name: name.trim(),
-      description: description?.trim() || null
+      description: description?.trim() || null,
+      scheda_id: schedaId
     };
 
     // *** FIX: Usa client autenticato ***

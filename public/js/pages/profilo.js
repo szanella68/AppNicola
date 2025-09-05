@@ -742,3 +742,198 @@ async function initPage() {
 
 // Make profilo instance globally available for inline event handlers
 window.profilo = profilo;
+// 🚀 SOLUZIONE DEFINITIVA - IMPLEMENTAZIONE ROBUSTA
+// Aggiungi questo alla fine di public/js/pages/profilo.js
+
+(function initProfileAutoRefresh() {
+    'use strict';
+    
+    console.log('🔧 Initializing Profile Auto-Refresh System...');
+    
+    // ===== ASPETTA CHE PROFILO SIA PRONTO =====
+    function waitForProfileReady() {
+        if (!window.profilo || typeof window.profilo.handleProfileUpdate !== 'function') {
+            setTimeout(waitForProfileReady, 100);
+            return;
+        }
+        
+        setupAutoRefresh();
+    }
+    
+    // ===== SETUP SISTEMA AUTO-REFRESH =====
+    function setupAutoRefresh() {
+        console.log('⚙️ Setting up profile auto-refresh...');
+        
+        // Salva la funzione originale
+        const originalHandleProfileUpdate = window.profilo.handleProfileUpdate.bind(window.profilo);
+        
+        // Override con auto-refresh integrato
+        window.profilo.handleProfileUpdate = async function(event) {
+            console.log('📝 Profile update started...');
+            
+            try {
+                // Esegui l'aggiornamento originale
+                await originalHandleProfileUpdate(event);
+                
+                // Auto-refresh dopo delay sicuro
+                setTimeout(async () => {
+                    console.log('🔄 Auto-refreshing profile preview...');
+                    
+                    try {
+                        // Re-carica dati utente (fresh dal server)
+                        await this.loadUserData();
+                        
+                        // Re-renderizza sezione info utente
+                        this.renderUserInfo();
+                        
+                        // Feedback visivo di successo
+                        showUpdateSuccess();
+                        
+                        console.log('✅ Profile preview auto-refreshed successfully!');
+                        
+                    } catch (refreshError) {
+                        console.warn('⚠️ Auto-refresh fallito, usando fallback...', refreshError);
+                        handleRefreshFailure();
+                    }
+                }, 1000); // 1 secondo per essere sicuri che il server abbia processato
+                
+            } catch (updateError) {
+                console.error('❌ Errore nell\'aggiornamento profilo:', updateError);
+                throw updateError; // Re-throw per mantenere il comportamento originale
+            }
+        };
+        
+        console.log('✅ Profile auto-refresh system activated!');
+    }
+    
+    // ===== FEEDBACK VISIVO DI SUCCESSO =====
+    function showUpdateSuccess() {
+        const avatar = document.querySelector('.avatar-circle');
+        const userInfo = document.getElementById('userInfo');
+        
+        if (avatar) {
+            // Pulse effect sull'avatar
+            avatar.style.transition = 'all 0.3s ease';
+            avatar.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.3)';
+            avatar.style.transform = 'scale(1.05)';
+            
+            setTimeout(() => {
+                avatar.style.boxShadow = '';
+                avatar.style.transform = 'scale(1)';
+            }, 1000);
+        }
+        
+        if (userInfo) {
+            // Subtle background flash
+            const originalBg = userInfo.style.backgroundColor;
+            userInfo.style.transition = 'background-color 0.5s ease';
+            userInfo.style.backgroundColor = '#f0fdf4';
+            
+            setTimeout(() => {
+                userInfo.style.backgroundColor = originalBg;
+            }, 1500);
+        }
+    }
+    
+    // ===== GESTIONE FALLIMENTI =====
+    function handleRefreshFailure() {
+        console.log('🚨 Implementing refresh fallback strategy...');
+        
+        // Tentativo 1: Refresh diretto
+        try {
+            if (window.profilo && typeof window.profilo.renderUserInfo === 'function') {
+                window.profilo.renderUserInfo();
+                console.log('✅ Fallback refresh succeeded');
+                return;
+            }
+        } catch (e) {
+            console.log('⚠️ Fallback refresh failed');
+        }
+        
+        // Tentativo 2: Reload pagina dopo conferma
+        setTimeout(() => {
+            if (confirm('Aggiornamento completato! Ricaricare la pagina per vedere le modifiche?')) {
+                window.location.reload();
+            }
+        }, 1000);
+    }
+    
+    // ===== FUNZIONI DI UTILITÀ GLOBALI =====
+    
+    // Refresh manuale di emergenza
+    window.emergencyProfileRefresh = function() {
+        console.log('🚨 Emergency profile refresh triggered...');
+        
+        if (window.profilo) {
+            Promise.resolve()
+                .then(() => window.profilo.loadUserData())
+                .then(() => window.profilo.renderUserInfo())
+                .then(() => {
+                    console.log('✅ Emergency refresh completed');
+                    showUpdateSuccess();
+                })
+                .catch((error) => {
+                    console.error('❌ Emergency refresh failed:', error);
+                    if (confirm('Refresh manuale fallito. Ricaricare la pagina?')) {
+                        window.location.reload();
+                    }
+                });
+        } else {
+            console.log('❌ Profilo instance not available, reloading page...');
+            window.location.reload();
+        }
+    };
+    
+    // Test funzione per sviluppo
+    window.testProfilePreview = function() {
+        console.log('🧪 Testing profile preview system...');
+        
+        if (!window.profilo) {
+            console.log('❌ Profilo not available');
+            return;
+        }
+        
+        const testName = 'TEST-' + Date.now().toString().slice(-4);
+        
+        // Backup dati originali
+        const originalName = window.profilo.currentUser?.fullName;
+        const originalProfileName = window.profilo.profile?.full_name;
+        
+        // Test modifica
+        if (window.profilo.currentUser) {
+            window.profilo.currentUser.fullName = testName;
+        }
+        if (window.profilo.profile) {
+            window.profilo.profile.full_name = testName;
+        }
+        
+        // Test refresh
+        window.profilo.renderUserInfo();
+        
+        setTimeout(() => {
+            const newAvatar = document.querySelector('.avatar-circle')?.textContent.trim();
+            console.log('✅ Test completato - Avatar aggiornato a:', newAvatar);
+            
+            // Ripristina dati originali
+            if (window.profilo.currentUser) {
+                window.profilo.currentUser.fullName = originalName;
+            }
+            if (window.profilo.profile) {
+                window.profilo.profile.full_name = originalProfileName;
+            }
+            
+            // Ripristina UI
+            window.profilo.renderUserInfo();
+        }, 1000);
+    };
+    
+    // ===== INIZIALIZZAZIONE =====
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', waitForProfileReady);
+    } else {
+        waitForProfileReady();
+    }
+    
+    console.log('🚀 Profile Auto-Refresh System loaded successfully!');
+    
+})();

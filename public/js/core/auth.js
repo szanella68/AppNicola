@@ -313,9 +313,9 @@ const Auth = {
           user_type: role
         });
         this.closeModals();
-        if (window.location.pathname.includes('home.html')) {
-          window.location.href = 'app.html';
-        }
+        // Nuovo iscritto: porta subito alla pagina profilo
+        // Nota: lasciamo la logica app.html per il login normale.
+        window.location.href = 'profilo.html';
         this.showSuccessMessage('Registrazione completata con successo!');
       } else if (result?.needsConfirmation) {
         this.showSuccessMessage('Controlla la tua email per confermare l\'account');

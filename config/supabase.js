@@ -97,30 +97,31 @@ const dbHelpers = {
   },
 
   // Ottieni sessioni di allenamento utente CON AUTENTICAZIONE  
-  async getUserWorkoutPlans(userId, authClient = supabase) {
-    const { data, error } = await authClient
-      .from('workout_plans')
-      .select(`
-        *,
-        exercises (
-          id,
-          name,
-          sets,
-          reps,
-          weight,
-          notes,
-          recovery_seconds,
-          intensity,
-          media_url,
-          order_index
-        )
-      `)
-      .eq('user_id', userId)
-      .eq('is_active', true)
-      .order('created_at', { ascending: false });
-    
-    return { data, error };
-  },
+ async getUserWorkoutPlans(userId, authClient = supabase) {
+  const { data, error } = await authClient
+    .from('workout_plans')
+    .select(`
+      *,
+      exercises!exercises_workout_plan_id_fkey (
+        id,
+        name,
+        sets,
+        reps,
+        weight,
+        notes,
+        recovery_seconds,
+        intensity,
+        media_url,
+        order_index
+      )
+    `)
+    .eq('user_id', userId)
+    .eq('is_active', true)
+    .order('created_at', { ascending: false });
+  
+  return { data, error };
+},
+
 
   // Aggiungi esercizio CON AUTENTICAZIONE
   async addExercise(workoutPlanId, exerciseData, authClient = supabase) {
