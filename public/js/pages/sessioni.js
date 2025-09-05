@@ -547,3 +547,272 @@ async function initPage() {
 
 // Make schede instance globally available for inline event handlers
 window.schede = schede;
+
+// 🔄 FIX CORRETTO - SISTEMA AUTO-REFRESH PER SESSIONI/ESERCIZI
+// Sostituisci la parte finale di sessioni.js con questo codice corretto
+
+(function initSessionAutoRefresh() {
+    'use strict';
+    
+    console.log('🔧 Initializing Session Auto-Refresh System...');
+    
+    // ===== ASPETTA CHE SCHEDE SIA PRONTO =====
+    function waitForSchede() {
+        if (!window.schede || typeof window.schede.loadWorkouts !== 'function') {
+            setTimeout(waitForSchede, 100);
+            return;
+        }
+        
+        setupSessionAutoRefresh();
+    }
+    
+    // ===== SETUP SISTEMA AUTO-REFRESH =====
+    function setupSessionAutoRefresh() {
+        console.log('⚙️ Setting up session auto-refresh...');
+        
+        const schede = window.schede;
+        
+        if (!schede) {
+            console.warn('⚠️ window.schede not found');
+            return;
+        }
+        
+        // Override dei metodi CRUD principali
+        overrideCRUDMethods(schede);
+        
+        // Intercetta form submissions  
+        interceptFormSubmissions();
+        
+        // Intercetta click sui pulsanti azione
+        interceptActionButtons();
+        
+        console.log('✅ Session auto-refresh system activated!');
+    }
+    
+    // ===== OVERRIDE METODI CRUD =====
+    function overrideCRUDMethods(schede) {
+        
+        // 1. Override handleWorkoutSubmit
+        if (typeof schede.handleWorkoutSubmit === 'function') {
+            const originalSubmit = schede.handleWorkoutSubmit.bind(schede);
+            schede.handleWorkoutSubmit = async function(event) {
+                try {
+                    console.log('📝 Workout submit started...');
+                    const result = await originalSubmit(event);
+                    console.log('✅ Workout submit completed, auto-refreshing...');
+                    
+                    // Delay per essere sicuri che il modal si chiuda
+                    setTimeout(async () => {
+                        await this.loadWorkouts();
+                        showRefreshSuccess('Sessione aggiornata');
+                    }, 500);
+                    
+                    return result;
+                } catch (error) {
+                    console.error('❌ Workout submit failed:', error);
+                    throw error;
+                }
+            };
+        }
+        
+        // 2. Override handleExerciseSubmit
+        if (typeof schede.handleExerciseSubmit === 'function') {
+            const originalExerciseSubmit = schede.handleExerciseSubmit.bind(schede);
+            schede.handleExerciseSubmit = async function(event) {
+                try {
+                    console.log('💪 Exercise submit started...');
+                    const result = await originalExerciseSubmit(event);
+                    console.log('✅ Exercise submit completed, auto-refreshing...');
+                    
+                    // Delay per essere sicuri che il modal si chiuda
+                    setTimeout(async () => {
+                        await this.loadWorkouts();
+                        showRefreshSuccess('Esercizio aggiornato');
+                    }, 500);
+                    
+                    return result;
+                } catch (error) {
+                    console.error('❌ Exercise submit failed:', error);
+                    throw error;
+                }
+            };
+        }
+        
+        // 3. Override confirmDeleteWorkout  
+        if (typeof schede.confirmDeleteWorkout === 'function') {
+            const originalDelete = schede.confirmDeleteWorkout.bind(schede);
+            schede.confirmDeleteWorkout = async function(workoutId) {
+                try {
+                    console.log('🗑️ Workout delete started...');
+                    const result = await originalDelete(workoutId);
+                    console.log('✅ Workout deleted, auto-refreshing...');
+                    
+                    setTimeout(async () => {
+                        await this.loadWorkouts();
+                        showRefreshSuccess('Sessione eliminata');
+                    }, 300);
+                    
+                    return result;
+                } catch (error) {
+                    console.error('❌ Delete workout failed:', error);
+                    throw error;
+                }
+            };
+        }
+        
+        // 4. Override confirmDeleteExercise
+        if (typeof schede.confirmDeleteExercise === 'function') {
+            const originalDeleteExercise = schede.confirmDeleteExercise.bind(schede);
+            schede.confirmDeleteExercise = async function(workoutId, exerciseId) {
+                try {
+                    console.log('🗑️ Exercise delete started...');
+                    const result = await originalDeleteExercise(workoutId, exerciseId);
+                    console.log('✅ Exercise deleted, auto-refreshing...');
+                    
+                    setTimeout(async () => {
+                        await this.loadWorkouts();
+                        showRefreshSuccess('Esercizio eliminato');
+                    }, 300);
+                    
+                    return result;
+                } catch (error) {
+                    console.error('❌ Delete exercise failed:', error);
+                    throw error;
+                }
+            };
+        }
+    }
+    
+    // ===== INTERCETTA FORM SUBMISSIONS =====
+    function interceptFormSubmissions() {
+        document.addEventListener('submit', async function(event) {
+            const form = event.target;
+            
+            // Form workout
+            if (form.matches('#workoutForm')) {
+                console.log('📝 Workout form intercepted');
+                // Il refresh viene gestito nell'override handleWorkoutSubmit
+            }
+            
+            // Form esercizio
+            if (form.matches('#exerciseForm')) {
+                console.log('💪 Exercise form intercepted');
+                // Il refresh viene gestito nell'override handleExerciseSubmit
+            }
+        });
+    }
+    
+    // ===== INTERCETTA CLICK AZIONI =====
+    function interceptActionButtons() {
+        document.addEventListener('click', async function(event) {
+            const target = event.target;
+            
+            // Click su pulsanti di eliminazione workout
+            if (target.matches('.btn-delete-workout')) {
+                console.log('🗑️ Delete workout button intercepted');
+                // Il refresh viene gestito nell'override confirmDeleteWorkout
+            }
+            
+            // Click su pulsanti di eliminazione esercizio
+            if (target.matches('.btn-delete-exercise')) {
+                console.log('🗑️ Delete exercise button intercepted');
+                // Il refresh viene gestito nell'override confirmDeleteExercise
+            }
+        });
+    }
+    
+    // ===== FUNZIONI DI SUPPORTO =====
+    
+    // Feedback visivo di successo
+    function showRefreshSuccess(message) {
+        // Pulse effect sui container principali
+        const containers = [
+            '#workoutsContainer',
+            '.workouts-grid'
+        ];
+        
+        containers.forEach(selector => {
+            const container = document.querySelector(selector);
+            if (container) {
+                container.style.transition = 'all 0.3s ease';
+                container.style.backgroundColor = '#f0fdf4';
+                container.style.transform = 'scale(1.01)';
+                
+                setTimeout(() => {
+                    container.style.backgroundColor = '';
+                    container.style.transform = 'scale(1)';
+                }, 800);
+            }
+        });
+        
+        // Log per debug
+        console.log('✅ ' + message);
+        
+        // Toast opzionale
+        if (typeof Utils !== 'undefined' && Utils.showSuccess) {
+            Utils.showSuccess(message);
+        }
+    }
+    
+    // ===== FUNZIONI GLOBALI DI UTILITÀ =====
+    
+    // Refresh manuale forzato
+    window.forceSessionsRefresh = async function() {
+        console.log('🚨 Force refreshing sessions...');
+        
+        if (window.schede && typeof window.schede.loadWorkouts === 'function') {
+            try {
+                await window.schede.loadWorkouts();
+                showRefreshSuccess('Refresh manuale completato');
+            } catch (error) {
+                console.error('❌ Force refresh failed:', error);
+            }
+        } else {
+            console.log('❌ window.schede not available');
+        }
+    };
+    
+    // Test del sistema
+    window.testSessionRefresh = function() {
+        console.log('🧪 Testing session refresh system...');
+        showRefreshSuccess('Test completato');
+        
+        setTimeout(() => {
+            if (window.schede) {
+                window.schede.loadWorkouts();
+            }
+        }, 1000);
+    };
+    
+    // Debug del sistema
+    window.debugSessionRefresh = function() {
+        console.log('🔍 Session Refresh Debug:');
+        console.log('  window.schede exists:', !!window.schede);
+        
+        if (window.schede) {
+            console.log('  Schede methods:');
+            console.log('    loadWorkouts:', typeof window.schede.loadWorkouts);
+            console.log('    handleWorkoutSubmit:', typeof window.schede.handleWorkoutSubmit);
+            console.log('    handleExerciseSubmit:', typeof window.schede.handleExerciseSubmit);
+            console.log('    confirmDeleteWorkout:', typeof window.schede.confirmDeleteWorkout);
+            console.log('    confirmDeleteExercise:', typeof window.schede.confirmDeleteExercise);
+            console.log('    workouts count:', window.schede.workouts?.length || 0);
+        }
+        
+        console.log('  DOM elements:');
+        console.log('    #workoutsContainer:', !!document.querySelector('#workoutsContainer'));
+        console.log('    .workouts-grid:', !!document.querySelector('.workouts-grid'));
+        
+        console.log('  API available:', !!window.API);
+    };
+    
+    // ===== INIZIALIZZAZIONE =====
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', waitForSchede);
+    } else {
+        waitForSchede();
+    }
+    
+    console.log('🚀 Session Auto-Refresh System loaded successfully!');
+    
+})();

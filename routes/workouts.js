@@ -2,12 +2,33 @@ const express = require('express');
 const { authenticateUser, dbHelpers, supabase, supabaseAdmin } = require('../config/supabase');
 const router = express.Router();
 
+
 // GET /api/workouts - Ottieni tutte le sessioni di allenamento dell'utente
 router.get('/', authenticateUser, async (req, res) => {
   try {
     const userId = req.user.id;
-    // *** FIX: Usa client autenticato ***
-    const { data, error } = await dbHelpers.getUserWorkoutPlans(userId, req.supabaseAuth);
+    
+    // *** FIX: Query diretta che include sessioni con scheda_id ***
+    const { data, error } = await req.supabaseAuth
+      .from('workout_plans')
+      .select(`
+        *,
+        exercises (
+          id,
+          name,
+          sets,
+          reps,
+          weight,
+          notes,
+          recovery_seconds,
+          intensity,
+          media_url,
+          order_index
+        )
+      `)
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .order('updated_at', { ascending: false });
 
     if (error) {
       console.error('Errore recupero sessioni:', error);
@@ -20,13 +41,14 @@ router.get('/', authenticateUser, async (req, res) => {
       exercises: plan.exercises?.sort((a, b) => a.order_index - b.order_index) || []
     })) || [];
 
+    console.log(`✅ Found ${workoutPlans.length} workout plans for user ${userId}`); // Debug
+
     res.status(200).json({ workoutPlans });
   } catch (error) {
     console.error('Errore interno recupero sessioni:', error);
     res.status(500).json({ error: 'Errore interno del server' });
   }
 });
-
 // GET /api/workouts/:id - Ottieni una sessione specifica
 router.get('/:id', authenticateUser, async (req, res) => {
   try {
