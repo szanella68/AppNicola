@@ -262,10 +262,13 @@ const Auth = {
       }
       const result = await window.API.login(email, password);
       if (result?.session && result?.user) {
+        const role = (result.profile && result.profile.user_type) || result.user.user_type || 'standard';
+        try { localStorage.setItem('gymtracker_role', role); } catch (_) {}
         this.setUser({
           email: result.user.email,
           name: result.user.fullName || (result.user.email?.split('@')[0]) || 'Utente',
-          id: result.user.id
+          id: result.user.id,
+          user_type: role
         });
         this.closeModals();
         if (window.location.pathname.includes('home.html')) {
@@ -301,10 +304,13 @@ const Auth = {
       }
       const result = await window.API.register(email, password, { fullName: name });
       if (result?.session && result?.user) {
+        const role = (result.profile && result.profile.user_type) || result.user.user_type || 'standard';
+        try { localStorage.setItem('gymtracker_role', role); } catch (_) {}
         this.setUser({
           email: result.user.email,
           name: name || (result.user.email?.split('@')[0]) || 'Utente',
-          id: result.user.id
+          id: result.user.id,
+          user_type: role
         });
         this.closeModals();
         if (window.location.pathname.includes('home.html')) {

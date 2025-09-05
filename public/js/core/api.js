@@ -39,10 +39,18 @@ class API {
     // Get current user session token
     getAuthToken() {
         try {
+            // Preferred: session stored by core Auth
             const session = (typeof Auth !== 'undefined' && typeof Auth.getSession === 'function')
                 ? Auth.getSession()
                 : null;
-            const token = session?.access_token;
+            let token = session?.access_token || null;
+            // Fallback: legacy token from app flows
+            if (!token) {
+                try {
+                    const legacy = localStorage.getItem('supabase_token');
+                    if (legacy) token = legacy;
+                } catch (_) {}
+            }
             return token || null;
         } catch (e) {
             console.warn('[API] getAuthToken error:', e);
@@ -70,6 +78,14 @@ class API {
                 headers: { ...defaultOptions.headers, ...options.headers }
             };
 
+            if (!token && !endpoint.startsWith('/auth')) {
+                console.warn('[API] No token attached for', endpoint);
+            } else {
+                console.log('[API] Request', endpoint, {
+                    hasToken: !!token,
+                    method: requestOptions.method || 'GET'
+                });
+            }
             const response = await fetch(`${this.baseURL}${endpoint}`, requestOptions);
             
             if (!response.ok) {

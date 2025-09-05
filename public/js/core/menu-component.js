@@ -73,6 +73,7 @@ const Menu = {
       'hub': 'app.html',
       'sessioni': 'sessioni.html',
       'schede': 'schede.html', 
+      'trainer': 'trainer.html',
       'calendario': 'calendario.html',
       'profilo': 'profilo.html',
       'terms': 'terms.html',
@@ -111,6 +112,7 @@ const Menu = {
     
     if (path.includes('sessioni.html')) currentPage = 'sessioni';
     else if (path.includes('schede.html')) currentPage = 'schede';
+    else if (path.includes('trainer.html')) currentPage = 'trainer';
     else if (path.includes('calendario.html')) currentPage = 'calendario';
     else if (path.includes('profilo.html')) currentPage = 'profilo';
     else if (path.includes('terms.html')) currentPage = 'terms';
@@ -158,6 +160,14 @@ const Menu = {
     
     // Update greeting
     this.updateUserGreeting(user);
+
+    // Apply role-based visibility (minimal frontend test)
+    try {
+      const role = (user && (user.user_type || user.role))
+        || localStorage.getItem('gymtracker_role')
+        || 'standard';
+      this.applyRoleVisibility(role);
+    } catch (_) {}
   },
   
   // Show public menu
@@ -168,6 +178,18 @@ const Menu = {
     
     if (publicMenu) publicMenu.classList.remove('hidden');
     if (privateMenu) privateMenu.classList.add('hidden');
+  },
+
+  // Role-based visibility for dropdown items
+  applyRoleVisibility(role = 'standard') {
+    const allowed = String(role).toLowerCase();
+    document.querySelectorAll('#dropdownContent [data-role]')
+      .forEach(el => {
+        const roles = String(el.getAttribute('data-role') || 'all').toLowerCase();
+        const list = roles.split(',').map(r => r.trim());
+        const visible = list.includes('all') || list.includes(allowed);
+        el.style.display = visible ? '' : 'none';
+      });
   },
   
   // Update user greeting

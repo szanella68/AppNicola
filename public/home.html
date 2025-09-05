@@ -100,6 +100,13 @@
                 align-items: center; 
             }
         }
+        
+        .build-version {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin: 0.5rem 0 1rem;
+        }
     </style>
 </head>
 <body>
@@ -109,31 +116,31 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Il Tuo Personal Trainer Digitale</h1>
-            <p>Crea, gestisci e monitora le tue sessioni di allenamento personalizzate</p>
+            <h1>Ciao, sono Nicola: il tuo Personal Trainer online</h1>
+            <p>Creo piani di allenamento su misura per i tuoi obiettivi. Con l’app segui le sessioni, registri i progressi e io ti guido passo dopo passo.</p>
             <div class="hero-buttons">
-                <button class="cta-button" onclick="Auth.showRegister()">
-                    🚀 Inizia Gratis
-                </button>
-                <button class="cta-button secondary" onclick="Auth.showLogin()">
-                    👤 Ho già un account
-                </button>
+                <button class="cta-button" onclick="Auth.showRegister()">🚀 Inizia ora</button>
+                <a class="cta-button secondary" href="#come-funziona">ℹ️ Scopri come funziona</a>
             </div>
         </div>
     </section>
     
-    <!-- Mission Section -->
-    <section class="mission">
-        <h2>La Nostra Missione</h2>
+    <!-- How It Works Section -->
+    <section class="mission" id="come-funziona">
+        <h2>Come funziona</h2>
         <p>
-            GymTracker nasce per semplificare la gestione dei tuoi allenamenti. 
-            Crea sessioni personalizzate, monitora i progressi e mantieni la costanza 
-            nel tuo percorso fitness. Tutto in un'interfaccia semplice e intuitiva.
+            1) Iscriviti e compila il profilo (obiettivi, livello, preferenze).<br/>
+            2) Ti contatto se servono dettagli, poi preparo il tuo piano dedicato.<br/>
+            3) Trovi le sessioni nell’app: allenati, registra pesi/serie e monitora i progressi.<br/>
+            4) Aggiorniamo insieme il piano per crescere in modo costante e sicuro.
         </p>
     </section>
 
     <!-- Footer Container (Template System) -->
     <div id="footerContainer"></div>
+
+    <!-- Build/version row (update this on each deploy) -->
+    <div class="build-version">Versione: 1.2</div>
 
     <!-- JavaScript -->
     <script src="js/core/template-loader.js"></script>

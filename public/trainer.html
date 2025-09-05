@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trainer Dashboard</title>
+  <link rel="stylesheet" href="css/menu-component.css" />
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/trainer.css" />
+</head>
+<body>
+  <div id="headerContainer"></div>
+  <main id="mainContent" class="main-content">
+    <div class="trainer-container">
+      <div class="trainer-header">
+        <h1 class="trainer-title">🧑‍🏫 Trainer Dashboard</h1>
+        <div class="trainer-actions">
+          <div class="client-filter">
+            <label for="statusFilter">Stato</label>
+            <select id="statusFilter" class="form-select">
+              <option value="all">Tutti</option>
+              <option value="active">Attivi</option>
+              <option value="inactive">Non attivi</option>
+            </select>
+          </div>
+          <div class="client-picker">
+            <label for="clientSelect">Cliente</label>
+            <select id="clientSelect" class="form-select">
+              <option value="">Seleziona cliente…</option>
+            </select>
+          </div>
+          <div class="client-filter">
+            <label for="includeAdmins">Includi admin</label>
+            <input type="checkbox" id="includeAdmins" />
+          </div>
+        </div>
+      </div>
+
+      <div class="trainer-tabs">
+        <button class="tab-btn active" data-tab="overview">Panoramica</button>
+        <button class="tab-btn" data-tab="schede">Schede</button>
+        <button class="tab-btn" data-tab="sessioni">Sessioni</button>
+        <button class="tab-btn" data-tab="calendario">Calendario</button>
+        <button class="tab-btn" data-tab="risultati">Risultati</button>
+        <button class="tab-btn" data-tab="report">Report</button>
+        <button class="tab-btn" data-tab="note">Note</button>
+      </div>
+
+      <section id="tab-overview" class="tab-pane active">
+        <div class="empty-state">
+          <div class="empty-state-icon">📊</div>
+          <h3 class="empty-state-title">Seleziona un cliente per iniziare</h3>
+          <p class="empty-state-description">Qui vedrai KPI, aderenza e ultimi progressi.</p>
+        </div>
+      </section>
+      <section id="tab-schede" class="tab-pane">
+        <div class="schede-grid">
+          <aside class="schede-list">
+            <div class="schede-list-header">
+              <h3 class="schede-title-inline">Schede <small id="schedeCount">(0)</small></h3>
+              <div class="schede-filters">
+                <label for="schedeShowDeleted">Mostra solo cancellate</label>
+                <input type="checkbox" id="schedeShowDeleted" />
+              </div>
+            </div>
+            <div id="schedeListContainer" class="schede-list-body"></div>
+          </aside>
+          <section class="scheda-detail">
+            <div class="scheda-actions">
+              <button id="btnNuovaScheda" class="btn-secondary">+ Nuova Scheda</button>
+              <button id="btnSalvaScheda" class="btn-primary">💾 Salva Scheda</button>
+              <button id="btnAnnullaScheda" class="btn-secondary">Annulla modifiche</button>
+              <!-- NOTE: Bottone 'Salva come Nuova' nascosto per ora. La routine JS resta attiva per future esigenze. -->
+              <button id="btnSalvaCopiaScheda" class="btn-primary" style="display:none">💾 Salva come Nuova</button>
+              <button id="btnCancellaScheda" class="btn-danger">🗑️ Cancella Scheda</button>
+              <button id="btnRipristinaScheda" class="btn-secondary" style="display:none">↩️ Ripristina</button>
+            </div>
+            <form id="schedaForm" class="scheda-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="scTitolo">Titolo *</label>
+                  <input type="text" id="scTitolo" name="titolo" class="form-input" placeholder="Es: Programma Forza 8 settimane" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="scAutore">Autore</label>
+                  <input type="text" id="scAutore" name="autore" class="form-input" placeholder="Nicola" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="scDurata">Durata (settimane)</label>
+                  <input type="number" id="scDurata" name="durata_settimane" class="form-input" min="1" max="52" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="scFreq">Sessioni/settimana</label>
+                  <input type="number" id="scFreq" name="sessioni_settimana" class="form-input" min="0" max="14" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="scAttiva">Attiva</label>
+                  <input type="checkbox" id="scAttiva" name="attiva" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="scDescr">Descrizione</label>
+                <textarea id="scDescr" name="descrizione" class="form-textarea" placeholder="Obiettivi, focus, linee guida..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="scNote">Note</label>
+                <textarea id="scNote" name="note" class="form-textarea" placeholder="Note interne per il trainer..."></textarea>
+              </div>
+              <input type="hidden" id="scId" />
+            </form>
+
+            <div class="scheda-sessioni">
+              <div class="scheda-sessioni-header">
+                <h3>Sessioni della scheda</h3>
+                <div class="sessioni-actions">
+                  <small id="sessLockNotice" style="color:#6b7280;display:none;">Salva la scheda per aggiungere sessioni</small>
+                  <button id="btnToggleSessForm" class="btn-secondary" title="Nuova sessione">＋</button>
+                  <div id="sessQuickForm" class="inline-form hidden" style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;">
+                    <input type="text" id="sessName" class="form-input" placeholder="Nome sessione" style="max-width:280px" />
+                    <input type="text" id="sessDesc" class="form-input" placeholder="Descrizione (opzionale)" style="max-width:360px" />
+                    <button id="btnAddSessione" class="btn-primary">Aggiungi</button>
+                  </div>
+                </div>
+              </div>
+              <div id="sessioniList" class="sessioni-list"></div>
+            </div>
+          </section>
+        </div>
+      </section>
+      <section id="tab-sessioni" class="tab-pane">
+        <div class="empty-state">
+          <div class="empty-state-icon">💪</div>
+          <h3 class="empty-state-title">Sessioni</h3>
+          <p class="empty-state-description">Libreria sessioni ed editor. (Placeholder)</p>
+        </div>
+      </section>
+      <section id="tab-calendario" class="tab-pane">
+        <div class="empty-state">
+          <div class="empty-state-icon">📅</div>
+          <h3 class="empty-state-title">Calendario</h3>
+          <p class="empty-state-description">Pianifica le sessioni del cliente. (Placeholder)</p>
+        </div>
+      </section>
+      <section id="tab-risultati" class="tab-pane">
+        <div class="empty-state">
+          <div class="empty-state-icon">📈</div>
+          <h3 class="empty-state-title">Risultati</h3>
+          <p class="empty-state-description">Trend e progressi. (Placeholder)</p>
+        </div>
+      </section>
+      <section id="tab-report" class="tab-pane">
+        <div class="empty-state">
+          <div class="empty-state-icon">🗂️</div>
+          <h3 class="empty-state-title">Report</h3>
+          <p class="empty-state-description">Sintesi ed esportazioni. (Placeholder)</p>
+        </div>
+      </section>
+      <section id="tab-note" class="tab-pane">
+        <div class="empty-state">
+          <div class="empty-state-icon">📝</div>
+          <h3 class="empty-state-title">Note</h3>
+          <p class="empty-state-description">Appunti e promemoria. (Placeholder)</p>
+        </div>
+      </section>
+    </div>
+  </main>
+  <div id="footerContainer"></div>
+
+  <script src="js/core/template-loader.js"></script>
+  <script src="js/core/menu-component.js"></script>
+  <script src="js/core/auth.js"></script>
+  <script src="js/core/utils.js"></script>
+  <script src="js/core/api.js"></script>
+  <script src="js/trainer.js"></script>
+  <script>
+    window.PageInit = async function () {
+      if (!Auth.isAuthenticated()) { window.location.href = 'home.html'; return; }
+      const user = Auth.getCurrentUser();
+      const role = (user && user.user_type) || localStorage.getItem('gymtracker_role') || 'standard';
+      if (String(role).toLowerCase() !== 'admin') { window.location.href = 'app.html'; return; }
+      console.log('✅ Trainer page initialized (admin role)');
+      try {
+        await TrainerPage.loadClients();
+      } catch (e) { console.warn('Client load failed', e); }
+    };
+  </script>
+</body>
+</html>

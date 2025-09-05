@@ -62,11 +62,15 @@ const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
 const workoutRoutes = require('./routes/workouts');
 const scheduleRoutes = require('./routes/schedule');
+const clientsRoutes = require('./routes/clients');
+const schedeRoutes = require('./routes/schede');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/schedule', scheduleRoutes);
+app.use('/api/clients', clientsRoutes);
+app.use('/api/schede', schedeRoutes);
 
 /* ======== AGGIUNTA HEALTH ======== */
 app.get('/api/health', (req, res) => {

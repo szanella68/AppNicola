@@ -29,43 +29,46 @@
         <!-- Dropdown Content - COMPLETE with all sections -->
         <div class="dropdown-content" id="dropdownContent">
           <!-- Core App Functions -->
-          <a href="#" onclick="Menu.goto('hub')" data-page="hub" class="dropdown-item">
+          <a href="#" onclick="Menu.goto('hub')" data-page="hub" data-role="all" class="dropdown-item">
             🏠 <span>Hub</span>
           </a>
-            <a href="#" onclick="Menu.goto('sessioni')" data-page="sessioni" class="dropdown-item">
+            <a href="#" onclick="Menu.goto('sessioni')" data-page="sessioni" data-role="all" class="dropdown-item">
               💪 <span>Le Mie Sessioni</span>
             </a>
-            <a href="#" onclick="Menu.goto('schede')" data-page="schede" class="dropdown-item">
+            <a href="#" onclick="Menu.goto('schede')" data-page="schede" data-role="admin" class="dropdown-item">
               📘 <span>Le Mie Schede</span>
             </a>
-          <a href="#" onclick="Menu.goto('calendario')" data-page="calendario" class="dropdown-item">
-            📅 <span>Calendario</span>
-          </a>
-          <a href="#" onclick="Menu.goto('profilo')" data-page="profilo" class="dropdown-item">
-            👤 <span>Profilo</span>
-          </a>
+            <a href="#" onclick="Menu.goto('calendario')" data-page="calendario" data-role="all" class="dropdown-item">
+              📅 <span>Calendario</span>
+            </a>
+            <a href="#" onclick="Menu.goto('profilo')" data-page="profilo" data-role="all" class="dropdown-item">
+              👤 <span>Profilo</span>
+            </a>
+            <a href="#" onclick="Menu.goto('trainer')" data-page="trainer" data-role="admin" class="dropdown-item">
+              🧑‍🏫 <span>Trainer Dashboard</span>
+            </a>
           
           <!-- First Divider -->
           <div class="dropdown-divider"></div>
           
           <!-- Legal & Support -->
-          <a href="#" onclick="Menu.goto('terms')" data-page="terms" class="dropdown-item">
-            📋 <span>Terms & Condizioni</span>
-          </a>
-          <a href="#" onclick="Menu.goto('privacy')" data-page="privacy" class="dropdown-item">
-            🔒 <span>Privacy Policy</span>
-          </a>
-          <a href="#" onclick="Menu.goto('contatti')" data-page="contatti" class="dropdown-item">
-            ✉️ <span>Contatti & Supporto</span>
-          </a>
+            <a href="#" onclick="Menu.goto('terms')" data-page="terms" data-role="all" class="dropdown-item">
+              📋 <span>Terms & Condizioni</span>
+            </a>
+            <a href="#" onclick="Menu.goto('privacy')" data-page="privacy" data-role="all" class="dropdown-item">
+              🔒 <span>Privacy Policy</span>
+            </a>
+            <a href="#" onclick="Menu.goto('contatti')" data-page="contatti" data-role="all" class="dropdown-item">
+              ✉️ <span>Contatti & Supporto</span>
+            </a>
           
           <!-- Second Divider -->
           <div class="dropdown-divider"></div>
           
           <!-- Logout -->
-          <a href="#" onclick="Auth.logout()" class="dropdown-item logout-item">
-            🚪 <span>Logout</span>
-          </a>
+            <a href="#" onclick="Auth.logout()" data-role="all" class="dropdown-item logout-item">
+              🚪 <span>Logout</span>
+            </a>
         </div>
       </div>
     </div>

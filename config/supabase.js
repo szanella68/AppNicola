@@ -47,20 +47,21 @@ const createAuthenticatedClient = (accessToken) => {
 const authenticateUser = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.warn('[authN] Missing or malformed Authorization header:', authHeader ? 'present' : 'absent');
       return res.status(401).json({ error: 'Token di autenticazione mancante' });
     }
 
     const token = authHeader.substring(7);
+    console.log('[authN] Verifying token, length:', token?.length || 0);
     const { user, error } = await verifyToken(token);
 
     if (error || !user) {
+      console.warn('[authN] Token invalid:', error?.message || 'no user');
       return res.status(401).json({ error: 'Token non valido o scaduto' });
     }
 
     req.user = user;
-    // *** FIX: Aggiungi client autenticato alla request ***
     req.supabaseAuth = createAuthenticatedClient(token);
     next();
   } catch (error) {

@@ -1,0 +1,119 @@
+.trainer-container{max-width:1200px;margin:0 auto;padding:2rem}
+.trainer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;gap:1rem}
+.trainer-title{font-size:2rem;font-weight:800;color:#1f2937;margin:0}
+.trainer-actions{display:flex;gap:1rem;align-items:flex-end}
+.client-picker label{display:block;color:#374151;font-weight:600;margin-bottom:.25rem}
+.client-picker .form-select{min-width:260px;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px}
+.trainer-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.tab-btn{border:1px solid #d1d5db;background:#fff;padding:.5rem .75rem;border-radius:8px;cursor:pointer;color:#374151;font-weight:600}
+.tab-btn.active{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+.empty-state{text-align:center;padding:3rem 1rem;color:#6b7280;background:#f9fafb;border:1px dashed #e5e7eb;border-radius:12px}
+.empty-state-icon{font-size:3rem;margin-bottom:.5rem}
+.empty-state-title{font-size:1.25rem;font-weight:700;color:#1f2937;margin-bottom:.25rem}
+.empty-state-description{font-size:1rem}
+
+/* Schede tab */
+.schede-grid{display:grid;grid-template-columns:320px 1fr;gap:1rem}
+.schede-list{background:#fff;border:1px solid #e5e7eb;border-radius:12px}
+.schede-list-header{display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;border-bottom:1px solid #e5e7eb;gap:1rem}
+.schede-title-inline{display:flex;align-items:baseline;gap:.5rem;margin:0}
+.schede-title-inline small{color:#6b7280;font-weight:600;white-space:nowrap}
+.schede-filters{display:flex;align-items:center;gap:.5rem}
+.schede-filters .form-select{min-width:160px}
+.schede-list-body{max-height:60vh;overflow:auto}
+.scheda-item{padding:0.75rem 1rem;border-bottom:1px solid #f3f4f6;cursor:pointer}
+.scheda-item:hover{background:#f9fafb}
+.scheda-item.active{background:#eff6ff;border-left:4px solid #3b82f6}
+.scheda-item.state-active{border-left:4px solid #10b981;}
+.scheda-item.state-inactive{border-left:4px solid #f59e0b;}
+.scheda-item .title{font-weight:600;color:#1f2937}
+.scheda-item .meta{font-size:.85rem;color:#6b7280}
+
+.scheda-detail{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+.scheda-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.btn-primary{background:#3b82f6;color:#fff;border:1px solid #3b82f6;padding:.45rem .8rem;border-radius:8px;cursor:pointer}
+.btn-primary:hover{background:#2563eb;border-color:#2563eb}
+.btn-secondary{background:#fff;border:1.5px solid #60a5fa;color:#2563eb;padding:.45rem .8rem;border-radius:8px;cursor:pointer}
+.btn-secondary:hover{background:#eff6ff;border-color:#3b82f6}
+.btn-danger{background:#f87171;color:#fff;border:1px solid #ef4444;padding:.45rem .8rem;border-radius:8px;cursor:pointer}
+.btn-danger:hover{background:#ef4444}
+.scheda-form .form-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.scheda-form .form-group{margin-bottom:1rem}
+.form-input,.form-textarea,.form-select{width:100%;padding:.6rem;border:1px solid #d1d5db;border-radius:8px}
+.form-textarea{min-height:100px}
+
+/* Sessioni & Esercizi */
+.scheda-sessioni{margin-top:1.25rem}
+.scheda-sessioni-header{display:flex;justify-content:space-between;align-items:center;margin:0.5rem 0 0.75rem}
+.sessioni-actions{display:flex;gap:.5rem;align-items:center}
+.sessioni-list{border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;background:#ffffff}
+.sessione-item{display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:.75rem .9rem;border-bottom:1px solid #f3f4f6;background:#ffffff}
+.sessione-item:nth-child(even){background:#fbfdff}
+.sessione-item:hover{background:#f9fafb}
+.sessione-title{font-weight:600;color:#1f2937}
+.sessione-meta{font-size:.85rem;color:#6b7280}
+.sessione-actions{display:flex;gap:.35rem}
+
+.exercises-panel{margin-top:1rem;border:1px solid #e5e7eb;border-radius:8px;padding:.75rem}
+.ex-panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.ex-actions{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.exercises-list{border-top:1px solid #f3f4f6;padding:.5rem .5rem .25rem .5rem;background:#f9fafb;border-radius:8px}
+.exercise-row{display:grid;grid-template-columns:minmax(0,1fr) 60px 60px 70px 70px 70px 110px auto;gap:.35rem;align-items:center;padding:.35rem;border-bottom:1px dotted #e5e7eb;border-radius:6px}
+.exercise-row:nth-child(even){background:#ffffff}
+.exercise-name{font-weight:600}
+.exercise-actions button{margin-left:.25rem}
+
+/* --- Overrides for nested layout (esercizi sotto la sessione, con indent) --- */
+.sessioni-list .sessione-item{display:block}
+.sessioni-list .sessione-item > div:first-child{display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap}
+.sessione-item .exercises-list{margin-left:1rem;padding-left:.75rem;border-left:2px solid #e5e7eb;margin-top:.35rem}
+.sessione-item .ex-quick-form{margin-left:1rem}
+
+/* Compact buttons */
+.btn-sm{padding:.25rem .5rem !important;font-size:.85rem !important;border-radius:6px !important}
+.sessione-actions .btn-primary,
+.sessione-actions .btn-secondary,
+.sessione-actions .btn-danger{padding:.25rem .5rem;font-size:.85rem;border-radius:6px}
+.exercise-actions .btn-primary,
+.exercise-actions .btn-secondary,
+.exercise-actions .btn-danger{padding:.2rem .45rem;font-size:.8rem;border-radius:6px}
+
+/* Edit inline blocks */
+.sess-edit-form,.ex-edit-form{background:#eef2ff;border:1px solid #dbeafe;border-radius:8px;padding:.5rem;margin:.35rem 0}
+.ex-quick-form{background:#f3f4f6;border:1px solid #e5e7eb;border-radius:8px;padding:.5rem}
+
+/* Responsive: contenuto sempre dentro lo schermo */
+.trainer-container{overflow-x:hidden}
+@media (max-width: 1000px){
+  .schede-grid{grid-template-columns:1fr}
+}
+@media (max-width: 680px){
+  .sessione-actions{flex-wrap:wrap}
+  .exercise-row{grid-template-columns:minmax(0,1fr) 60px 60px}
+  .exercise-row > div:nth-child(4),
+  .exercise-row > div:nth-child(5),
+  .exercise-row > div:nth-child(6),
+  .exercise-row > div:nth-child(7){grid-column:1 / -1}
+}
+
+/* --- Layout fixes: evitare overflow orizzontale e mettere esercizi sotto con indent --- */
+.trainer-container{overflow-x:hidden}
+.sessioni-list .sessione-item > div:first-child{flex-wrap:wrap}
+.sessione-actions{flex-wrap:wrap}
+.exercise-row{grid-template-columns:minmax(0,1fr) 70px 70px 70px auto;max-width:100%}
+.exercise-name{word-break:break-word}
+
+/* Responsive: griglia singola colonna e righe esercizi più compatte */
+@media (max-width: 1000px){
+  .schede-grid{grid-template-columns:1fr}
+}
+
+@media (max-width: 680px){
+  .sessioni-list .sessione-item > div:first-child{flex-direction:column;align-items:flex-start}
+  .sessione-actions{width:100%;justify-content:flex-start}
+  .exercise-row{grid-template-columns:minmax(0,1fr) 60px 60px}
+  .exercise-row > div:nth-child(4){grid-column:1 / -1}
+  .exercise-actions{justify-self:start}
+}
