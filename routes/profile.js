@@ -188,7 +188,7 @@ router.delete('/', authenticateUser, async (req, res) => {
     }
 
     // Prima disattiva tutte le sessioni di allenamento
-    const { error: plansError } = await supabase
+   const { error: plansError } = await req.supabaseAuth
       .from('workout_plans')
       .update({ is_active: false })
       .eq('user_id', userId);

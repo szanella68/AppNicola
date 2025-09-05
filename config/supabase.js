@@ -1,5 +1,5 @@
-// Fix per config/supabase.js
-// Il problema: server-side Supabase client non conosce l'utente per RLS policies
+// config/supabase.js - FILE COMPLETO
+// Fix per RLS policies + client autenticato
 
 const { createClient } = require('@supabase/supabase-js');
 
@@ -29,21 +29,33 @@ const supabase = createClient(
 );
 
 // *** FIX: Funzione per creare client autenticato ***
-const createAuthenticatedClient = (accessToken) => {
-  return createClient(
+const createAuthenticatedClient = async (accessToken) => {
+  const client = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_ANON_KEY,
     {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
       global: {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          'X-Client-Info': 'gymtracker-nodejs@1.0.0',
         },
       },
     }
   );
+
+  // *** QUESTO È IL FIX CHIAVE: Imposta la sessione invece di solo l'header ***
+  await client.auth.setSession({
+    access_token: accessToken,
+    refresh_token: null // Non necessario per operazioni server-side
+  });
+
+  return client;
 };
 
-// Middleware per autenticazione MIGLIORATO
+// Middleware per autenticazione AGGIORNATO
 const authenticateUser = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -62,7 +74,8 @@ const authenticateUser = async (req, res, next) => {
     }
 
     req.user = user;
-    req.supabaseAuth = createAuthenticatedClient(token);
+    // *** FIX: Crea client autenticato con setSession ***
+    req.supabaseAuth = await createAuthenticatedClient(token);
     next();
   } catch (error) {
     console.error('Errore autenticazione:', error);
@@ -70,7 +83,7 @@ const authenticateUser = async (req, res, next) => {
   }
 };
 
-// Aggiorna dbHelpers per usare client autenticato
+// dbHelpers con supporto client autenticato
 const dbHelpers = {
   // Crea nuova sessione di allenamento CON AUTENTICAZIONE
   async createWorkoutPlan(userId, planData, authClient = supabase) {
@@ -162,7 +175,7 @@ const dbHelpers = {
   }
 };
 
-// Resto del codice rimane invariato...
+// Verifica token JWT
 const verifyToken = async (token) => {
   try {
     const { data: { user }, error } = await supabase.auth.getUser(token);
@@ -173,6 +186,7 @@ const verifyToken = async (token) => {
   }
 };
 
+// Client admin (se disponibile)
 const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY ? 
   createClient(
     process.env.SUPABASE_URL,
