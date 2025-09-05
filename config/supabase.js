@@ -1,4 +1,4 @@
-// config/supabase.js - FILE COMPLETO
+// config/supabase.js - FILE COMPLETO 1
 // Fix per RLS policies + client autenticato
 
 const { createClient } = require('@supabase/supabase-js');
