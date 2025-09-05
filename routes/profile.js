@@ -153,7 +153,8 @@ router.get('/stats', authenticateUser, async (req, res) => {
     const userId = req.user.id;
 
     // Query per ottenere statistiche aggregate
-    const { data: workoutPlans, error: plansError } = await dbHelpers.getUserWorkoutPlans(userId);
+    // NOTE: usare il client autenticato (RLS) per evitare 401/ambiguità lato Supabase
+    const { data: workoutPlans, error: plansError } = await dbHelpers.getUserWorkoutPlans(userId, req.supabaseAuth);
     
     if (plansError) {
       console.error('Errore statistiche:', plansError);
